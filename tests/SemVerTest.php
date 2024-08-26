@@ -41,6 +41,14 @@ class SemVerTest extends TestCase
     }
 
     #[Test]
+    public function rejects_range_greater_than_with_two_symbols(): void
+    {
+        $this->artisan('semver:check ">>7.0.0" 7.0.1')
+            ->expectsOutput('constraint MAJOR, MINOR and PATCH must all be integers')
+            ->assertExitCode(Command::FAILURE);
+    }
+
+    #[Test]
     public function rejects_range_greater_than_equal(): void
     {
         $this->artisan('semver:check ">7.0.0" 7.0.0')

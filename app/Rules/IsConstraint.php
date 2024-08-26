@@ -13,7 +13,9 @@ class IsConstraint implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $value = ltrim($value, '>');
+        if(str_starts_with($value, '>')) {
+            $value = substr($value, 1);
+        }
 
         $semverParts = explode('.', $value);
 
