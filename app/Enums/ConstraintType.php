@@ -8,6 +8,7 @@ use App\Models\Version;
 enum ConstraintType
 {
     case Exact;
+    case Not;
     case RangeGreaterThan;
     case RangeLessThan;
     case RangeGreaterThanOrEqualTo;
@@ -57,6 +58,12 @@ enum ConstraintType
                 && $version->minor === $constraint->minor) {
                 return $version->patch > $constraint->patch;
             }
+        }
+
+        if($this === ConstraintType::Not) {
+            return $version->major !== $constraint->major
+                || $version->minor !== $constraint->minor
+                || $version->patch !== $constraint->patch;
         }
 
         return $version->major === $constraint->major

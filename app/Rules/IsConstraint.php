@@ -44,6 +44,10 @@ class IsConstraint implements ValidationRule
             $value = substr($value, 1);
         }
 
+        elseif(str_starts_with($value, '!=')) {
+            $value = substr($value, 2);
+        }
+
         return explode('.', $value);
     }
 

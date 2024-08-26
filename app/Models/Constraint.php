@@ -13,7 +13,7 @@ readonly class Constraint
 
     public function __construct(string $version)
     {
-        $versionParts = ltrim($version, '=<>');
+        $versionParts = ltrim($version, '=<>!');
         $versionParts = explode('.', $versionParts);
 
         $this->type = $this->determineType($version);
@@ -29,6 +29,7 @@ readonly class Constraint
             $start[0] === '<' => ConstraintType::RangeLessThan,
             $start === '>=' => ConstraintType::RangeGreaterThanOrEqualTo,
             $start[0] === '>' => ConstraintType::RangeGreaterThan,
+            $start === '!=' => ConstraintType::Not,
             true => ConstraintType::Exact,
         };
     }
