@@ -16,12 +16,12 @@ class IsVersion implements ValidationRule
         $semverParts = explode('.', $value);
 
         if(count($semverParts) !== 3) {
-            $fail("$attribute must be in the format MAJOR.MINOR.PATCH");
+            $fail('Version must be in the format MAJOR.MINOR.PATCH');
         }
 
         foreach($semverParts as $semverPart) {
             if($this->invalidInteger($semverPart)) {
-                $fail("$attribute MAJOR, MINOR and PATCH must all be integers");
+                $fail('Version MAJOR, MINOR and PATCH must all be integers');
             }
         }
     }

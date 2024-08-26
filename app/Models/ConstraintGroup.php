@@ -7,9 +7,14 @@ readonly class ConstraintGroup
     /** @var list<Constraint>  */
     public array $constraints;
 
-    public function __construct(string $version)
+    public function __construct(string $input)
     {
-        $this->constraints = [new Constraint($version)];
+        $constraints = explode(',', $input);
+
+        $this->constraints = array_map(
+            fn(string $constraint) => new Constraint($constraint),
+            $constraints,
+        );
     }
 
     public function allows(Version $version): bool

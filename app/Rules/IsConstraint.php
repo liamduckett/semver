@@ -13,15 +13,23 @@ class IsConstraint implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $semVerParts = $this->getSemVerParts($value);
+        $constraints = explode(',', $value);
 
-        if(count($semVerParts) !== 3) {
-            $fail("$attribute must be in the format MAJOR.MINOR.PATCH");
-        }
+        foreach($constraints as $key => $constraint) {
+            $semVerParts = $this->getSemVerParts($constraint);
 
-        foreach($semVerParts as $semverPart) {
-            if($this->invalidInteger($semverPart)) {
-                $fail("$attribute MAJOR, MINOR and PATCH must all be integers");
+            $constraintNumber = count($constraints) === 1
+                ? ''
+                : $key + 1 . ' ';
+
+            if(count($semVerParts) !== 3) {
+                $fail('Constraint ' . $constraintNumber . 'must be in the format MAJOR.MINOR.PATCH');
+            }
+
+            foreach($semVerParts as $semverPart) {
+                if($this->invalidInteger($semverPart)) {
+                    $fail('Constraint ' . $constraintNumber . 'MAJOR, MINOR and PATCH must all be integers');
+                }
             }
         }
     }
