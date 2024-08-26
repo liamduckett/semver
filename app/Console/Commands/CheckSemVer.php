@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Constraint;
+use App\Models\ConstraintGroup;
 use App\Models\Version;
 use App\Rules\IsConstraint;
 use App\Rules\IsVersion;
@@ -26,7 +26,7 @@ class CheckSemVer extends Command
         $constraintInput = $this->argument('constraint');
         $versionInput = $this->argument('version');
 
-        $constraint = new Constraint($constraintInput);
+        $constraint = new ConstraintGroup($constraintInput);
         $version = new Version($versionInput);
 
         $output = $constraint->allows($version) ? 'Pass' : 'Fail';
