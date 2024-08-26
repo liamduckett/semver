@@ -9,9 +9,25 @@ use Illuminate\Foundation\Testing\TestCase;
 class SemverTest extends TestCase
 {
     #[Test]
-    public function can_run_semver_check_command(): void
+    public function can_run_command(): void
     {
         $this->artisan('semver:check 8.0.0 7.0.0')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function rejects_missing_patch(): void
+    {
+        $this->artisan('semver:check 8.0 7.0.0')
+            ->expectsOutput("constraint must be in the format MAJOR.MINOR.PATCH")
+            ->assertExitCode(Command::FAILURE);
+    }
+
+    #[Test]
+    public function rejects_non_integer_patch(): void
+    {
+        $this->artisan('semver:check 8.0.foo 7.0.0')
+            ->expectsOutput("constraint MAJOR, MINOR and PATCH must all be integers")
             ->assertExitCode(Command::FAILURE);
     }
 }
