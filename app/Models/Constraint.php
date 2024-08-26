@@ -33,33 +33,6 @@ readonly class Constraint
 
     public function allows(Version $version): bool
     {
-        if($this->type === ConstraintType::RangeGreaterThanOrEqualTo) {
-            return $version->major >= $this->major
-                && $version->minor >= $this->minor
-                && $version->patch >= $this->patch;
-        }
-
-        if($this->type === ConstraintType::RangeGreaterThan) {
-            if($version->major > $this->major) {
-                return true;
-            }
-
-            if($version->major === $this->major
-                && $version->minor > $this->minor) {
-                return true;
-            }
-
-            if($version->major === $this->major
-                && $version->minor === $this->minor
-                && $version->patch > $this->patch) {
-                return true;
-            }
-
-            return false;
-        }
-
-        return $version->major === $this->major
-            && $version->minor === $this->minor
-            && $version->patch === $this->patch;
+        return $this->type->allows($this, $version);
     }
 }
