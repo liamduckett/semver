@@ -32,12 +32,9 @@ enum ConstraintType
             }
 
             if($version->major === $constraint->major
-                && $version->minor === $constraint->minor
-                && $version->patch < $constraint->patch) {
-                return true;
+                && $version->minor === $constraint->minor) {
+                return $version->patch < $constraint->patch;
             }
-
-            return false;
         }
 
         if($this === ConstraintType::RangeGreaterThanOrEqualTo) {
@@ -57,12 +54,9 @@ enum ConstraintType
             }
 
             if($version->major === $constraint->major
-                && $version->minor === $constraint->minor
-                && $version->patch > $constraint->patch) {
-                return true;
+                && $version->minor === $constraint->minor) {
+                return $version->patch > $constraint->patch;
             }
-
-            return false;
         }
 
         return $version->major === $constraint->major
