@@ -11,7 +11,16 @@ class SemVerTest extends TestCase
     #[Test]
     public function can_run_command(): void
     {
-        $this->artisan('semver:check 8.0.0 7.0.0')
+        $this->artisan('semver:check 8.0.0 8.0.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function returns_failure_for_exact_check(): void
+    {
+        $this->artisan('semver:check 8.0.0 8.0.1')
+            ->expectsOutput('Fail')
             ->assertExitCode(Command::SUCCESS);
     }
 

@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Rules\IsSemVer;
+use App\Constraint;
+use App\Rules\IsVersion;
+use App\Version;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Command\Command as ConsoleCommand;
@@ -23,14 +25,22 @@ class CheckSemVer extends Command
         $constraintInput = $this->argument('constraint');
         $versionInput = $this->argument('version');
 
+        $constraint = new Constraint($constraintInput);
+        $version = new Version($versionInput);
+
+        $output = $constraint->allows($version) ? 'Pass' : 'Fail';
+
+        $this->line($output);
+
         return ConsoleCommand::SUCCESS;
+
     }
 
     protected function validateArguments(): bool
     {
         $validator = Validator::make($this->arguments(), [
-            'constraint' => ['string', new IsSemVer],
-            'version' => ['string', new IsSemVer],
+            'constraint' => ['string', new IsVersion],
+            'version' => ['string', new IsVersion],
         ]);
 
         if ($validator->fails()) {
