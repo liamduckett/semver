@@ -6,7 +6,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Command\Command;
 use Illuminate\Foundation\Testing\TestCase;
 
-class SemverTest extends TestCase
+class SemVerTest extends TestCase
 {
     #[Test]
     public function can_run_command(): void

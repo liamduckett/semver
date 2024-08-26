@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
-class IsSemver implements ValidationRule
+class IsSemVer implements ValidationRule
 {
     /**
      * @param Closure(string): PotentiallyTranslatedString $fail

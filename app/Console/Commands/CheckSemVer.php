@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Rules\IsSemver;
+use App\Rules\IsSemVer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Command\Command as ConsoleCommand;
 
-class CheckSemver extends Command
+class CheckSemVer extends Command
 {
     protected $signature = 'semver:check {constraint} {version}';
 
@@ -29,8 +29,8 @@ class CheckSemver extends Command
     protected function validateArguments(): bool
     {
         $validator = Validator::make($this->arguments(), [
-            'constraint' => ['string', new IsSemver],
-            'version' => ['string', new IsSemver],
+            'constraint' => ['string', new IsSemVer],
+            'version' => ['string', new IsSemVer],
         ]);
 
         if ($validator->fails()) {
