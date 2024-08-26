@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 readonly class Version
 {
@@ -10,7 +10,6 @@ readonly class Version
 
     public function __construct(string $version)
     {
-        /** @var list<int> $versionParts */
         $versionParts = explode('.', $version);
 
         [$this->major, $this->minor, $this->patch] = $versionParts;

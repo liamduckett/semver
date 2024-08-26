@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Constraint;
+use App\Models\Constraint;
+use App\Models\Version;
+use App\Rules\IsConstraint;
 use App\Rules\IsVersion;
-use App\Version;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Command\Command as ConsoleCommand;
@@ -39,7 +40,7 @@ class CheckSemVer extends Command
     protected function validateArguments(): bool
     {
         $validator = Validator::make($this->arguments(), [
-            'constraint' => ['string', new IsVersion],
+            'constraint' => ['string', new IsConstraint],
             'version' => ['string', new IsVersion],
         ]);
 
