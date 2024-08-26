@@ -13,21 +13,30 @@ class IsConstraint implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if(str_starts_with($value, '>')) {
-            $value = substr($value, 1);
-        }
+        $semVerParts = $this->getSemVerParts($value);
 
-        $semverParts = explode('.', $value);
-
-        if(count($semverParts) !== 3) {
+        if(count($semVerParts) !== 3) {
             $fail("$attribute must be in the format MAJOR.MINOR.PATCH");
         }
 
-        foreach($semverParts as $semverPart) {
+        foreach($semVerParts as $semverPart) {
             if($this->invalidInteger($semverPart)) {
                 $fail("$attribute MAJOR, MINOR and PATCH must all be integers");
             }
         }
+    }
+
+    protected function getSemVerParts(string $value): array
+    {
+        if(str_starts_with($value, '>=')) {
+            $value = substr($value, 2);
+        }
+
+        elseif(str_starts_with($value, '>')) {
+            $value = substr($value, 1);
+        }
+
+        return explode('.', $value);
     }
 
     protected function invalidInteger(string $str): bool

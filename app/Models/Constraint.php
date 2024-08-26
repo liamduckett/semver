@@ -13,7 +13,7 @@ readonly class Constraint
 
     public function __construct(string $version)
     {
-        $versionParts = ltrim($version, '>');
+        $versionParts = ltrim($version, '>=');
         $versionParts = explode('.', $versionParts);
 
         $this->type = $this->determineType($version);
@@ -22,12 +22,24 @@ readonly class Constraint
 
     protected function determineType(string $version): ConstraintType
     {
-        return str_starts_with($version, '>') ? ConstraintType::Range : ConstraintType::Exact;
+        $start = substr($version, 0, 2);
+
+        return match(true) {
+            $start === '>=' => ConstraintType::RangeGreaterThanOrEqualTo,
+            $start[0] === '>' => ConstraintType::RangeGreaterThan,
+            true => ConstraintType::Exact,
+        };
     }
 
     public function allows(Version $version): bool
     {
-        if($this->type === ConstraintType::Range) {
+        if($this->type === ConstraintType::RangeGreaterThanOrEqualTo) {
+            return $version->major >= $this->major
+                && $version->minor >= $this->minor
+                && $version->patch >= $this->patch;
+        }
+
+        if($this->type === ConstraintType::RangeGreaterThan) {
             if($version->major > $this->major) {
                 return true;
             }
@@ -46,8 +58,8 @@ readonly class Constraint
             return false;
         }
 
-        return $this->major === $version->major
-            && $this->minor === $version->minor
-            && $this->patch === $version->patch;
+        return $version->major === $this->major
+            && $version->minor === $this->minor
+            && $version->patch === $this->patch;
     }
 }
