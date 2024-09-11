@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Enums\ConstraintType;
+use App\Enums\SingleConstraintType;
 
 readonly class SingleConstraint
 {
-    public ConstraintType $type;
+    public SingleConstraintType $type;
     public int $major;
     public int $minor;
     public int $patch;
@@ -20,17 +20,17 @@ readonly class SingleConstraint
         [$this->major, $this->minor, $this->patch] = $versionParts;
     }
 
-    protected function determineType(string $version): ConstraintType
+    protected function determineType(string $version): SingleConstraintType
     {
         $start = substr($version, 0, 2);
 
         return match(true) {
-            $start === '<=' => ConstraintType::RangeLessThanOrEqualTo,
-            $start[0] === '<' => ConstraintType::RangeLessThan,
-            $start === '>=' => ConstraintType::RangeGreaterThanOrEqualTo,
-            $start[0] === '>' => ConstraintType::RangeGreaterThan,
-            $start === '!=' => ConstraintType::Not,
-            true => ConstraintType::Exact,
+            $start === '<=' => SingleConstraintType::RangeLessThanOrEqualTo,
+            $start[0] === '<' => SingleConstraintType::RangeLessThan,
+            $start === '>=' => SingleConstraintType::RangeGreaterThanOrEqualTo,
+            $start[0] === '>' => SingleConstraintType::RangeGreaterThan,
+            $start === '!=' => SingleConstraintType::Not,
+            true => SingleConstraintType::Exact,
         };
     }
 

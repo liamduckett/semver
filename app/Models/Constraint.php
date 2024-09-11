@@ -8,7 +8,7 @@ readonly class Constraint
 
     public function __construct(string $input)
     {
-        $isGroup = str_contains($input, ',');
+        $isGroup = str_contains($input, ',') || str_contains($input, '||');
 
         $this->value = $isGroup
             ? new GroupConstraint($input)

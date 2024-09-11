@@ -169,6 +169,22 @@ class SemVerTest extends TestCase
     }
 
     #[Test]
+    public function allows_basic_or(): void
+    {
+        $this->artisan('semver:check "7.0.0||7.0.1" 7.0.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function rejects_basic_or(): void
+    {
+        $this->artisan('semver:check "7.0.0||7.0.1" 7.0.2')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
     public function rejects_range_greater_than_with_two_symbols(): void
     {
         $this->artisan('semver:check ">>7.0.0" 7.0.1')

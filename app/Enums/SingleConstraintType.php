@@ -5,7 +5,7 @@ namespace App\Enums;
 use App\Models\SingleConstraint;
 use App\Models\Version;
 
-enum ConstraintType
+enum SingleConstraintType
 {
     case Exact;
     case Not;
@@ -16,13 +16,13 @@ enum ConstraintType
 
     public function allows(SingleConstraint $constraint, Version $version): bool
     {
-        if($this === ConstraintType::RangeLessThanOrEqualTo) {
+        if($this === SingleConstraintType::RangeLessThanOrEqualTo) {
             return $version->major <= $constraint->major
                 && $version->minor <= $constraint->minor
                 && $version->patch <= $constraint->patch;
         }
 
-        if($this === ConstraintType::RangeLessThan) {
+        if($this === SingleConstraintType::RangeLessThan) {
             if($version->major < $constraint->major) {
                 return true;
             }
@@ -38,13 +38,13 @@ enum ConstraintType
             }
         }
 
-        if($this === ConstraintType::RangeGreaterThanOrEqualTo) {
+        if($this === SingleConstraintType::RangeGreaterThanOrEqualTo) {
             return $version->major >= $constraint->major
                 && $version->minor >= $constraint->minor
                 && $version->patch >= $constraint->patch;
         }
 
-        if($this === ConstraintType::RangeGreaterThan) {
+        if($this === SingleConstraintType::RangeGreaterThan) {
             if($version->major > $constraint->major) {
                 return true;
             }
@@ -60,7 +60,7 @@ enum ConstraintType
             }
         }
 
-        if($this === ConstraintType::Not) {
+        if($this === SingleConstraintType::Not) {
             return $version->major !== $constraint->major
                 || $version->minor !== $constraint->minor
                 || $version->patch !== $constraint->patch;

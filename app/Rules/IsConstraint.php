@@ -13,7 +13,15 @@ class IsConstraint implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $constraints = explode(',', $value);
+        // don't allow any @ - we use this internally...
+        if(str_contains($value, '@')) {
+            $fail('Invalid character detected');
+        }
+
+        $replacedValue = str_replace(',', '@', $value);
+        $replacedValue = str_replace('||', '@', $replacedValue);
+
+        $constraints = explode('@', $replacedValue);
 
         foreach($constraints as $key => $constraint) {
             $semVerParts = $this->getSemVerParts($constraint);
