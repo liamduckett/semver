@@ -30,58 +30,49 @@ enum SingleConstraintType
 
     public function allows(SingleConstraint $constraint, Version $version): bool
     {
-        if($this === SingleConstraintType::RangeLessThanOrEqualTo) {
-            return $version->major <= $constraint->major
-                && $version->minor <= $constraint->minor
-                && $version->patch <= $constraint->patch;
-        }
+        return match($this) {
+            self::RangeLessThanOrEqualTo => $this->isLessThan($constraint, $version) || $this->isEqualTo($constraint, $version),
+            self::RangeLessThan => $this->isLessThan($constraint, $version),
+            self::RangeGreaterThanOrEqualTo => $this->isGreaterThan($constraint, $version) || $this->isEqualTo($constraint, $version),
+            self::RangeGreaterThan => $this->isGreaterThan($constraint, $version),
+            self::Not => $this->isNotEqualTo($constraint, $version),
+            self::Exact => $this->isEqualTo($constraint, $version),
+        };
+    }
 
-        if($this === SingleConstraintType::RangeLessThan) {
-            if($version->major < $constraint->major) {
-                return true;
-            }
-
-            if($version->major === $constraint->major
-                && $version->minor < $constraint->minor) {
-                return true;
-            }
-
-            if($version->major === $constraint->major
-                && $version->minor === $constraint->minor) {
-                return $version->patch < $constraint->patch;
-            }
-        }
-
-        if($this === SingleConstraintType::RangeGreaterThanOrEqualTo) {
-            return $version->major >= $constraint->major
-                && $version->minor >= $constraint->minor
-                && $version->patch >= $constraint->patch;
-        }
-
-        if($this === SingleConstraintType::RangeGreaterThan) {
-            if($version->major > $constraint->major) {
-                return true;
-            }
-
-            if($version->major === $constraint->major
-                && $version->minor > $constraint->minor) {
-                return true;
-            }
-
-            if($version->major === $constraint->major
-                && $version->minor === $constraint->minor) {
-                return $version->patch > $constraint->patch;
-            }
-        }
-
-        if($this === SingleConstraintType::Not) {
-            return $version->major !== $constraint->major
-                || $version->minor !== $constraint->minor
-                || $version->patch !== $constraint->patch;
-        }
-
+    protected function isEqualTo(SingleConstraint $constraint, Version $version): bool
+    {
         return $version->major === $constraint->major
             && $version->minor === $constraint->minor
             && $version->patch === $constraint->patch;
+    }
+
+    protected function isNotEqualTo(SingleConstraint $constraint, Version $version): bool
+    {
+        return ! $this->isEqualTo($constraint, $version);
+    }
+
+    protected function isLessThan(SingleConstraint $constraint, Version $version): bool
+    {
+        if($version->major < $constraint->major) {
+            return true;
+        }
+
+        if($version->major === $constraint->major
+            && $version->minor < $constraint->minor) {
+            return true;
+        }
+
+        if($version->major === $constraint->major
+            && $version->minor === $constraint->minor) {
+            return $version->patch < $constraint->patch;
+        }
+
+        return false;
+    }
+
+    protected function isGreaterThan(SingleConstraint $constraint, Version $version): bool
+    {
+        return ! $this->isLessThan($constraint, $version) && $this->isNotEqualTo($constraint, $version);
     }
 }
