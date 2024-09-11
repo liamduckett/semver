@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\Operator;
 
-readonly class GroupConstraint
+readonly class GroupConstraint extends Constraint
 {
     public SingleConstraint $first;
     public SingleConstraint $second;

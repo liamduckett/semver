@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\SingleConstraintType;
 
-readonly class SingleConstraint
+readonly class SingleConstraint extends Constraint
 {
     public SingleConstraintType $type;
     public int $major;
@@ -17,6 +17,7 @@ readonly class SingleConstraint
         $versionParts = explode('.', $version);
 
         $this->type = SingleConstraintType::determine($constraint);
+        dump($versionParts);
         [$this->major, $this->minor, $this->patch] = $versionParts;
     }
 

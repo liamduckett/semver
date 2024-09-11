@@ -26,7 +26,7 @@ class CheckSemVer extends Command
         $constraintInput = $this->argument('constraint');
         $versionInput = $this->argument('version');
 
-        $constraint = new Constraint($constraintInput);
+        $constraint = Constraint::create($constraintInput);
         $version = new Version($versionInput);
 
         $output = $constraint->allows($version) ? 'Pass' : 'Fail';

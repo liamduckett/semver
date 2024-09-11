@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-readonly class Constraint
+readonly abstract class Constraint
 {
     public GroupConstraint|SingleConstraint $value;
 
-    public function __construct(string $input)
+    public static function create(string $input): self
     {
         $isGroup = str_contains($input, ',') || str_contains($input, '||');
 
-        $this->value = $isGroup
+        return $isGroup
             ? new GroupConstraint($input)
             : new SingleConstraint($input);
     }
