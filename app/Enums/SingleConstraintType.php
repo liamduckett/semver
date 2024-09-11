@@ -14,6 +14,20 @@ enum SingleConstraintType
     case RangeGreaterThanOrEqualTo;
     case RangeLessThanOrEqualTo;
 
+    public static function determine(string $constraint): self
+    {
+        $start = substr($constraint, 0, 2);
+
+        return match(true) {
+            $start === '<=' => self::RangeLessThanOrEqualTo,
+            $start[0] === '<' => self::RangeLessThan,
+            $start === '>=' => self::RangeGreaterThanOrEqualTo,
+            $start[0] === '>' => self::RangeGreaterThan,
+            $start === '!=' => self::Not,
+            true => self::Exact,
+        };
+    }
+
     public function allows(SingleConstraint $constraint, Version $version): bool
     {
         if($this === SingleConstraintType::RangeLessThanOrEqualTo) {
