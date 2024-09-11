@@ -12,4 +12,6 @@ readonly abstract class Constraint
             ? new GroupConstraint($input)
             : new SingleConstraint($input);
     }
+
+    abstract public function allows(Version $version): bool;
 }
