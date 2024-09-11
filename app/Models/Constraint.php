@@ -2,40 +2,21 @@
 
 namespace App\Models;
 
-use App\Enums\ConstraintType;
-
 readonly class Constraint
 {
-    public ConstraintType $type;
-    public int $major;
-    public int $minor;
-    public int $patch;
+    public GroupConstraint|SingleConstraint $value;
 
-    public function __construct(string $version)
+    public function __construct(string $input)
     {
-        $versionParts = ltrim($version, '=<>!');
-        $versionParts = explode('.', $versionParts);
+        $isGroup = str_contains($input, ',');
 
-        $this->type = $this->determineType($version);
-        [$this->major, $this->minor, $this->patch] = $versionParts;
-    }
-
-    protected function determineType(string $version): ConstraintType
-    {
-        $start = substr($version, 0, 2);
-
-        return match(true) {
-            $start === '<=' => ConstraintType::RangeLessThanOrEqualTo,
-            $start[0] === '<' => ConstraintType::RangeLessThan,
-            $start === '>=' => ConstraintType::RangeGreaterThanOrEqualTo,
-            $start[0] === '>' => ConstraintType::RangeGreaterThan,
-            $start === '!=' => ConstraintType::Not,
-            true => ConstraintType::Exact,
-        };
+        $this->value = $isGroup
+            ? new GroupConstraint($input)
+            : new SingleConstraint($input);
     }
 
     public function allows(Version $version): bool
     {
-        return $this->type->allows($this, $version);
+        return $this->value->allows($version);
     }
 }

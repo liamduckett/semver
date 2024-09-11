@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-use App\Models\Constraint;
+use App\Models\SingleConstraint;
 use App\Models\Version;
 
 enum ConstraintType
@@ -14,7 +14,7 @@ enum ConstraintType
     case RangeGreaterThanOrEqualTo;
     case RangeLessThanOrEqualTo;
 
-    public function allows(Constraint $constraint, Version $version): bool
+    public function allows(SingleConstraint $constraint, Version $version): bool
     {
         if($this === ConstraintType::RangeLessThanOrEqualTo) {
             return $version->major <= $constraint->major
