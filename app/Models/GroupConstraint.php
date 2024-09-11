@@ -6,8 +6,8 @@ use App\Enums\Operator;
 
 readonly class GroupConstraint extends Constraint
 {
-    public SingleConstraint $first;
-    public SingleConstraint $second;
+    public Constraint $first;
+    public Constraint $second;
     public Operator $operator;
 
     public function __construct(string $input)
@@ -18,8 +18,8 @@ readonly class GroupConstraint extends Constraint
 
         $constraints = explode($operator->value, $input, 2);
 
-        $this->first = new SingleConstraint($constraints[0]);
-        $this->second = new SingleConstraint($constraints[1]);
+        $this->first = self::create($constraints[0]);
+        $this->second = self::create($constraints[1]);
         $this->operator = $operator;
     }
 
