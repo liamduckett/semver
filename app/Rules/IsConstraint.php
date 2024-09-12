@@ -19,14 +19,17 @@ class IsConstraint implements ValidationRule
             $fail('Invalid character detected');
         }
 
-        $replacedValue = str_replace(',', '@', $value);
-        $replacedValue = str_replace('||', '@', $replacedValue);
+        // remove spaces
+        $replacedValue = str_replace(' ', '', $value);
 
+        // convert special characters to @
+        $replacedValue = str_replace(',', '@', $replacedValue);
+        $replacedValue = str_replace('||', '@', $replacedValue);
+        // so we can split...
         $constraints = explode('@', $replacedValue);
 
         foreach($constraints as $constraint) {
             $semVerParts = $this->getSemVerParts($constraint);
-
             $type = SingleConstraintType::determine($constraint);
 
             if($type->requiresMajorMinorPatch() && count($semVerParts) !== 3) {
