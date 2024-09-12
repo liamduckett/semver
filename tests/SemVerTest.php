@@ -193,6 +193,14 @@ class SemVerTest extends TestCase
     }
 
     #[Test]
+    public function allows_and_with_or(): void
+    {
+        $this->artisan('semver:check "7.0.0||7.0.1,7.0.2" 7.0.0')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
     public function rejects_range_greater_than_with_two_symbols(): void
     {
         $this->artisan('semver:check ">>7.0.0" 7.0.1')

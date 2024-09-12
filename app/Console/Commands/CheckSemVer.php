@@ -34,7 +34,6 @@ class CheckSemVer extends Command
         $this->line($output);
 
         return ConsoleCommand::SUCCESS;
-
     }
 
     protected function validateArguments(): bool
