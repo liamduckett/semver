@@ -12,9 +12,9 @@ readonly class GroupConstraint extends Constraint
 
     public function __construct(string $input)
     {
-        $operator = str_contains($input, ',')
-            ? Operator::And
-            : Operator::Or;
+        $operator = str_contains($input, '||')
+            ? Operator::Or
+            : Operator::And;
 
         $constraints = explode($operator->value, $input, 2);
 
