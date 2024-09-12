@@ -20,7 +20,7 @@ enum SingleConstraintType
         $start = substr($constraint, 0, 2);
 
         return match(true) {
-            str_contains('-', $constraint) => self::HyphenatedRange,
+            str_contains($constraint, '-') => self::HyphenatedRange,
             $start === '<=' => self::RangeLessThanOrEqualTo,
             $start[0] === '<' => self::RangeLessThan,
             $start === '>=' => self::RangeGreaterThanOrEqualTo,

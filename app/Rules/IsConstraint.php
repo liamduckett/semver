@@ -29,10 +29,6 @@ class IsConstraint implements ValidationRule
                 $type->requiresMajorMinorPatch() => $this->validateExactConstraint($constraint),
                 true => $this->validateRangeConstraint($constraint),
             };
-
-            foreach($this->getSemVerParts($constraint) as $semverPart) {
-                $this->validateInteger($semverPart);
-            }
         }
     }
 
@@ -109,6 +105,10 @@ class IsConstraint implements ValidationRule
         if(count($semVerParts) < 1) {
             $this->fail("Range constraint '$constraint' must specify at least MAJOR");
         }
+
+        foreach($semVerParts as $semverPart) {
+            $this->validateInteger($semverPart);
+        }
     }
 
     protected function validateExactConstraint(string $constraint): void
@@ -117,6 +117,10 @@ class IsConstraint implements ValidationRule
 
         if(count($semVerParts) !== 3) {
             $this->fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
+        }
+
+        foreach($semVerParts as $semverPart) {
+            $this->validateInteger($semverPart);
         }
     }
 
