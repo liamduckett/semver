@@ -15,6 +15,7 @@ readonly class SingleConstraint extends Constraint
     {
         $version = ltrim($constraint, '=<>!');
         $versionParts = explode('.', $version);
+        $versionParts = array_pad($versionParts, 3, 0);
 
         $this->type = SingleConstraintType::determine($constraint);
         [$this->major, $this->minor, $this->patch] = $versionParts;

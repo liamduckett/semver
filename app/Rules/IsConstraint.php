@@ -24,7 +24,7 @@ class IsConstraint implements ValidationRule
 
         $constraints = explode('@', $replacedValue);
 
-        foreach($constraints as $key => $constraint) {
+        foreach($constraints as $constraint) {
             $semVerParts = $this->getSemVerParts($constraint);
 
             $type = SingleConstraintType::determine($constraint);
