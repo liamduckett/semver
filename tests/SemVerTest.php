@@ -217,6 +217,46 @@ class SemVerTest extends TestCase
     }
 
     #[Test]
+    public function allows_basic_hyphenated_range_constraint(): void
+    {
+        $this->artisan('semver:check "7.0.0 - 8.0.0" 7.5.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function allows_basic_hyphenated_range_lower_bound(): void
+    {
+        $this->artisan('semver:check "7.0.0 - 8.0.0" 7.0.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function allows_basic_hyphenated_range_upper_bound(): void
+    {
+        $this->artisan('semver:check "7.0.0 - 8.0.0" 8.0.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function rejects_basic_hyphenated_range(): void
+    {
+        $this->artisan('semver:check "7.0.0 - 8.0.0" 6.9.9')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function rejects_basic_hyphenated_range_above_upper_bound(): void
+    {
+        $this->artisan('semver:check "7.0.0 - 8.0.0" 8.0.1')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
     public function rejects_range_greater_than_with_two_symbols(): void
     {
         $this->artisan('semver:check ">>7.0.0" 7.0.1')

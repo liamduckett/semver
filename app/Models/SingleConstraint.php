@@ -34,4 +34,26 @@ readonly class SingleConstraint extends Constraint
     {
         return $this->type->allows($this, $version);
     }
+
+    // Modifications
+
+    public function changeType(SingleConstraintType $type): self
+    {
+        return new self(
+            type: $type,
+            major: $this->major,
+            minor: $this->minor,
+            patch: $this->patch,
+        );
+    }
+
+    public function incrementLeastSignificant(): self
+    {
+        return new self(
+            type: $this->type,
+            major: $this->major,
+            minor: $this->minor,
+            patch: $this->patch + 1,
+        );
+    }
 }
