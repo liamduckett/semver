@@ -204,7 +204,7 @@ class SemVerTest extends TestCase
     public function rejects_range_greater_than_with_two_symbols(): void
     {
         $this->artisan('semver:check ">>7.0.0" 7.0.1')
-            ->expectsOutput('Constraint MAJOR, MINOR and PATCH must all be integers')
+            ->expectsOutput("Constraint part '>7' is not an integer")
             ->assertExitCode(Command::FAILURE);
     }
 
@@ -212,7 +212,7 @@ class SemVerTest extends TestCase
     public function rejects_missing_patch(): void
     {
         $this->artisan('semver:check 8.0 7.0.0')
-            ->expectsOutput('Constraint must be in the format MAJOR.MINOR.PATCH')
+            ->expectsOutput("Exact constraint '8.0' must specify MAJOR, MINOR and PATCH")
             ->assertExitCode(Command::FAILURE);
     }
 
@@ -220,7 +220,7 @@ class SemVerTest extends TestCase
     public function rejects_non_integer_patch(): void
     {
         $this->artisan('semver:check 8.0.foo 7.0.0')
-            ->expectsOutput('Constraint MAJOR, MINOR and PATCH must all be integers')
+            ->expectsOutput("Constraint part 'foo' is not an integer")
             ->assertExitCode(Command::FAILURE);
     }
 }

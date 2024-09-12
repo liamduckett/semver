@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Enums\SingleConstraintType;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
@@ -26,17 +27,18 @@ class IsConstraint implements ValidationRule
         foreach($constraints as $key => $constraint) {
             $semVerParts = $this->getSemVerParts($constraint);
 
-            $constraintNumber = count($constraints) === 1
-                ? ''
-                : $key + 1 . ' ';
+            $type = SingleConstraintType::determine($constraint);
 
-            if(count($semVerParts) !== 3) {
-                $fail('Constraint ' . $constraintNumber . 'must be in the format MAJOR.MINOR.PATCH');
+            if($type->requiresMajorMinorPatch() && count($semVerParts) !== 3) {
+                $fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
+            }
+            elseif(count($semVerParts) < 2) {
+                $fail("Range constraint '$constraint' must specify at least MAJOR and MINOR");
             }
 
             foreach($semVerParts as $semverPart) {
                 if($this->invalidInteger($semverPart)) {
-                    $fail('Constraint ' . $constraintNumber . 'MAJOR, MINOR and PATCH must all be integers');
+                    $fail("Constraint part '$semverPart' is not an integer");
                 }
             }
         }
