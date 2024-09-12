@@ -10,9 +10,11 @@ readonly abstract class Constraint
         $isGroup = str_contains($input, ',') || str_contains($input, '||');
 
         return $isGroup
-            ? new GroupConstraint($input)
-            : new SingleConstraint($input);
+            ? GroupConstraint::fromString($input)
+            : SingleConstraint::fromString($input);
     }
+
+    abstract public static function fromString(string $input): self;
 
     abstract public function allows(Version $version): bool;
 }

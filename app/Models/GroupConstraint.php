@@ -6,11 +6,13 @@ use App\Enums\Operator;
 
 readonly class GroupConstraint extends Constraint
 {
-    public Constraint $first;
-    public Constraint $second;
-    public Operator $operator;
+    public function __construct(
+        public Constraint $first,
+        public Constraint $second,
+        public Operator $operator,
+    ) {}
 
-    public function __construct(string $input)
+    public static function fromString(string $input): self
     {
         $operator = str_contains($input, '||')
             ? Operator::Or
@@ -18,9 +20,14 @@ readonly class GroupConstraint extends Constraint
 
         $constraints = explode($operator->value, $input, 2);
 
-        $this->first = self::create($constraints[0]);
-        $this->second = self::create($constraints[1]);
-        $this->operator = $operator;
+        $first = self::create($constraints[0]);
+        $second = self::create($constraints[1]);
+
+        return new self(
+            first: $first,
+            second: $second,
+            operator: $operator,
+        );
     }
 
     public function allows(Version $version): bool

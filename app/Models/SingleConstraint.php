@@ -6,19 +6,28 @@ use App\Enums\SingleConstraintType;
 
 readonly class SingleConstraint extends Constraint
 {
-    public SingleConstraintType $type;
-    public int $major;
-    public int $minor;
-    public int $patch;
+    public function __construct(
+        public SingleConstraintType $type,
+        public int $major,
+        public int $minor,
+        public int $patch,
+    ) {}
 
-    public function __construct(string $constraint)
+    public static function fromString(string $input): self
     {
-        $version = ltrim($constraint, '=<>!');
+        $version = ltrim($input, '=<>!');
         $versionParts = explode('.', $version);
         $versionParts = array_pad($versionParts, 3, 0);
 
-        $this->type = SingleConstraintType::determine($constraint);
-        [$this->major, $this->minor, $this->patch] = $versionParts;
+        $type = SingleConstraintType::determine($input);
+        [$major, $minor, $patch] = $versionParts;
+
+        return new self(
+            type: $type,
+            major: $major,
+            minor: $minor,
+            patch: $patch,
+        );
     }
 
     public function allows(Version $version): bool
