@@ -9,57 +9,58 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 
 class IsConstraint implements ValidationRule
 {
+    protected Closure $fail;
+
     /**
      * @param Closure(string): PotentiallyTranslatedString $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // don't allow any @ - we use this internally...
-        if(str_contains($value, '@')) {
-            $fail('Invalid character detected');
-        }
+        // To allow calling from internal methods...
+        $this->fail = $fail;
 
-        // remove spaces
-        $replacedValue = str_replace(' ', '', $value);
-
-        // convert special characters to @
-        $replacedValue = str_replace(',', '@', $replacedValue);
-        $replacedValue = str_replace('||', '@', $replacedValue);
-        // so we can split...
-        $constraints = explode('@', $replacedValue);
+        $constraints = $this->split($value);
 
         foreach($constraints as $constraint) {
-            $isRange = str_contains($constraint, '-');
+            $semVerParts = $this->getSemVerParts($constraint);
+            $type = SingleConstraintType::determine($constraint);
 
-            if($isRange) {
-                $itemsInRange = explode('-', $constraint, 2);
+            match(true) {
+                $type === SingleConstraintType::HyphenatedRange => $this->validateHyphenatedRangeConstraint($constraint),
+                $type->requiresMajorMinorPatch() => $this->validateExactConstraint($constraint),
+                true => $this->validateRangeConstraint($constraint),
+            };
 
-                // check both range items are exact versions...
-                foreach($itemsInRange as $item) {
-                    $semVerParts = $this->getSemVerParts($item);
-
-                    if(count($semVerParts) !== 3) {
-                        $fail("Range constraint part '$constraint' must specify MAJOR, MINOR and PATCH");
-                    }
-                }
-            } else {
-                $semVerParts = $this->getSemVerParts($constraint);
-                $type = SingleConstraintType::determine($constraint);
-
-                if($type->requiresMajorMinorPatch() && count($semVerParts) !== 3) {
-                    $fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
-                }
-                elseif(count($semVerParts) < 1) {
-                    $fail("Range constraint '$constraint' must specify at least MAJOR");
-                }
-
-                foreach($semVerParts as $semverPart) {
-                    if($this->invalidInteger($semverPart)) {
-                        $fail("Constraint part '$semverPart' is not an integer");
-                    }
+            foreach($semVerParts as $semverPart) {
+                if($this->invalidInteger($semverPart)) {
+                    $fail("Constraint part '$semverPart' is not an integer");
                 }
             }
         }
+    }
+
+    // Internal
+
+    protected function fail(string $message): void
+    {
+        ($this->fail)($message);
+    }
+
+    protected function split(string $constraint): array
+    {
+        // don't allow any @ - we use this internally...
+        if(str_contains($constraint, '@')) {
+            $this->fail('Invalid character detected');
+        }
+
+        // remove spaces
+        $constraint = str_replace(' ', '', $constraint);
+
+        // convert special characters to @
+        $constraint = str_replace(',', '@', $constraint);
+        $constraint = str_replace('||', '@', $constraint);
+
+        return explode('@', $constraint);
     }
 
     protected function getSemVerParts(string $value): array
@@ -94,5 +95,31 @@ class IsConstraint implements ValidationRule
         // \d*          (Zero or More Digits Following):
         // $            (End of String):
         return preg_match('/^(0|[1-9]\d*)$/', $str) === 0;
+    }
+
+    protected function validateHyphenatedRangeConstraint(string $constraint): void
+    {
+        $constraints = explode('-', $constraint, 2);
+
+        foreach($constraints as $constraint) {
+            $this->validateExactConstraint($constraint);
+        }
+    }
+    protected function validateRangeConstraint(string $constraint): void
+    {
+        $semVerParts = $this->getSemVerParts($constraint);
+
+        if(count($semVerParts) < 1) {
+            $this->fail("Range constraint '$constraint' must specify at least MAJOR");
+        }
+    }
+
+    protected function validateExactConstraint(string $constraint): void
+    {
+        $semVerParts = $this->getSemVerParts($constraint);
+
+        if(count($semVerParts) !== 3) {
+            $this->fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
+        }
     }
 }

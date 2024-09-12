@@ -13,12 +13,14 @@ enum SingleConstraintType
     case RangeLessThan;
     case RangeGreaterThanOrEqualTo;
     case RangeLessThanOrEqualTo;
+    case HyphenatedRange;
 
     public static function determine(string $constraint): self
     {
         $start = substr($constraint, 0, 2);
 
         return match(true) {
+            str_contains('-', $constraint) => self::HyphenatedRange,
             $start === '<=' => self::RangeLessThanOrEqualTo,
             $start[0] === '<' => self::RangeLessThan,
             $start === '>=' => self::RangeGreaterThanOrEqualTo,
