@@ -32,8 +32,8 @@ class IsConstraint implements ValidationRule
             if($type->requiresMajorMinorPatch() && count($semVerParts) !== 3) {
                 $fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
             }
-            elseif(count($semVerParts) < 2) {
-                $fail("Range constraint '$constraint' must specify at least MAJOR and MINOR");
+            elseif(count($semVerParts) < 1) {
+                $fail("Range constraint '$constraint' must specify at least MAJOR");
             }
 
             foreach($semVerParts as $semverPart) {
