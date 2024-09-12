@@ -29,19 +29,34 @@ class IsConstraint implements ValidationRule
         $constraints = explode('@', $replacedValue);
 
         foreach($constraints as $constraint) {
-            $semVerParts = $this->getSemVerParts($constraint);
-            $type = SingleConstraintType::determine($constraint);
+            $isRange = str_contains($constraint, '-');
 
-            if($type->requiresMajorMinorPatch() && count($semVerParts) !== 3) {
-                $fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
-            }
-            elseif(count($semVerParts) < 1) {
-                $fail("Range constraint '$constraint' must specify at least MAJOR");
-            }
+            if($isRange) {
+                $itemsInRange = explode('-', $constraint, 2);
 
-            foreach($semVerParts as $semverPart) {
-                if($this->invalidInteger($semverPart)) {
-                    $fail("Constraint part '$semverPart' is not an integer");
+                // check both range items are exact versions...
+                foreach($itemsInRange as $item) {
+                    $semVerParts = $this->getSemVerParts($item);
+
+                    if(count($semVerParts) !== 3) {
+                        $fail("Range constraint part '$constraint' must specify MAJOR, MINOR and PATCH");
+                    }
+                }
+            } else {
+                $semVerParts = $this->getSemVerParts($constraint);
+                $type = SingleConstraintType::determine($constraint);
+
+                if($type->requiresMajorMinorPatch() && count($semVerParts) !== 3) {
+                    $fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
+                }
+                elseif(count($semVerParts) < 1) {
+                    $fail("Range constraint '$constraint' must specify at least MAJOR");
+                }
+
+                foreach($semVerParts as $semverPart) {
+                    if($this->invalidInteger($semverPart)) {
+                        $fail("Constraint part '$semverPart' is not an integer");
+                    }
                 }
             }
         }
