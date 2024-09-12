@@ -22,7 +22,6 @@ class IsConstraint implements ValidationRule
         $constraints = $this->split($value);
 
         foreach($constraints as $constraint) {
-            $semVerParts = $this->getSemVerParts($constraint);
             $type = SingleConstraintType::determine($constraint);
 
             match(true) {
@@ -31,10 +30,8 @@ class IsConstraint implements ValidationRule
                 true => $this->validateRangeConstraint($constraint),
             };
 
-            foreach($semVerParts as $semverPart) {
-                if($this->invalidInteger($semverPart)) {
-                    $fail("Constraint part '$semverPart' is not an integer");
-                }
+            foreach($this->getSemVerParts($constraint) as $semverPart) {
+                $this->validateInteger($semverPart);
             }
         }
     }
@@ -120,6 +117,13 @@ class IsConstraint implements ValidationRule
 
         if(count($semVerParts) !== 3) {
             $this->fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
+        }
+    }
+
+    protected function validateInteger(string $integer): void
+    {
+        if($this->invalidInteger($integer)) {
+            $this->fail("Constraint part '$integer' is not an integer");
         }
     }
 }
