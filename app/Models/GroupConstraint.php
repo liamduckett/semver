@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\Operator;
-use App\Enums\SingleConstraintType;
 
 readonly class GroupConstraint extends Constraint
 {
@@ -28,62 +27,6 @@ readonly class GroupConstraint extends Constraint
             first: $first,
             second: $second,
             operator: $operator,
-        );
-    }
-
-    public static function fromHyphenatedRangeString(string $input): self
-    {
-        [$first, $second] = explode('-', $input);
-
-        // 1.0.0 - 2.0.0
-        //    vvv
-        // >=1.0.0 , <2.0.1
-
-        $first = PartialConstraint::fromString($first)->changeType(SingleConstraintType::GreaterThanOrEqualTo);
-        $second = PartialConstraint::fromString($second)->changeType(SingleConstraintType::LessThan);
-
-        $second = $second->incrementLeastSignificant();
-
-        return new self(
-            first: $first->toSingleConstraint(),
-            second: $second->toSingleConstraint(),
-            operator: Operator::And,
-        );
-    }
-
-    public static function fromWildcardRangeString(string $input): parent
-    {
-        //       1.0.*
-        //        vvv
-        // >=1.0.0 , <1.1.0
-
-        //  *
-        // vvv
-        // >= 0.0.0
-
-        $partial = PartialConstraint::fromString($input);
-
-        if($partial->major instanceof Wildcard) {
-            return new SingleConstraint(
-                type: SingleConstraintType::GreaterThanOrEqualTo,
-                major: 0,
-                minor: 0,
-                patch: 0,
-            );
-        }
-
-        $first = $partial
-            ->changeType(SingleConstraintType::GreaterThanOrEqualTo)
-            ->minimum();
-
-        $second = $partial
-            ->changeType(SingleConstraintType::LessThan)
-            ->maximum();
-
-        return new self(
-            first: $first,
-            second: $second,
-            operator: Operator::And,
         );
     }
 
