@@ -27,7 +27,7 @@ class IsConstraint implements ValidationRule
             match(true) {
                 $type === SingleConstraintType::HyphenatedRange => $this->validateHyphenatedRangeConstraint($constraint),
                 $type->requiresMajorMinorPatch() => $this->validateExactConstraint($constraint),
-                true => $this->validateRangeConstraint($constraint),
+                true => $this->validateInexactConstraint($constraint),
             };
         }
     }
@@ -95,10 +95,10 @@ class IsConstraint implements ValidationRule
         $constraints = explode('-', $constraint, 2);
 
         foreach($constraints as $constraint) {
-            $this->validateExactConstraint($constraint);
+            $this->validateInexactConstraint($constraint);
         }
     }
-    protected function validateRangeConstraint(string $constraint): void
+    protected function validateInexactConstraint(string $constraint): void
     {
         $semVerParts = $this->getSemVerParts($constraint);
 
