@@ -12,7 +12,6 @@ readonly abstract class Constraint
         $input = str_replace(' ', '', $input);
 
         $isGroup = str_contains($input, ',') || str_contains($input, '||');
-
         $needsTransform = str_contains($input, '-') || str_contains($input, '*');
 
         return match(true) {
@@ -22,6 +21,12 @@ readonly abstract class Constraint
         };
     }
 
+    abstract public static function fromString(string $input): self;
+
+    abstract public function allows(Version $version): bool;
+
+    // Internals
+
     protected static function handleTransforms(string $input): self
     {
         return match(true) {
@@ -30,34 +35,35 @@ readonly abstract class Constraint
         };
     }
 
-    public static function handleHyphenatedRangeTransform(string $input): self
+    protected static function handleHyphenatedRangeTransform(string $input): self
     {
         [$first, $second] = explode('-', $input);
 
         // 1.0.0 - 2.0.0
-        //    vvv
         // >=1.0.0 , <2.0.1
 
-        $first = PartialConstraint::fromString($first)->changeType(SingleConstraintType::GreaterThanOrEqualTo);
-        $second = PartialConstraint::fromString($second)->changeType(SingleConstraintType::LessThan);
+        $first = PartialConstraint::fromString($first)
+            ->changeType(SingleConstraintType::GreaterThanOrEqualTo)
+            ->toSingleConstraint();
 
-        $second = $second->incrementLeastSignificant();
+        $second = PartialConstraint::fromString($second)
+            ->changeType(SingleConstraintType::LessThan)
+            ->incrementLeastSignificant()
+            ->toSingleConstraint();
 
         return new GroupConstraint(
-            first: $first->toSingleConstraint(),
-            second: $second->toSingleConstraint(),
+            first: $first,
+            second: $second,
             operator: Operator::And,
         );
     }
 
-    public static function handleWildcardRangeTransform(string $input): self
+    protected static function handleWildcardRangeTransform(string $input): self
     {
-        //       1.0.*
-        //        vvv
+        // 1.0.*
         // >=1.0.0 , <1.1.0
 
         //  *
-        // vvv
         // >= 0.0.0
 
         $partial = PartialConstraint::fromString($input);
@@ -85,8 +91,4 @@ readonly abstract class Constraint
             operator: Operator::And,
         );
     }
-
-    abstract public static function fromString(string $input): self;
-
-    abstract public function allows(Version $version): bool;
 }
