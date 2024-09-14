@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Operator;
 use App\Enums\SingleConstraintType;
 
 readonly class SingleConstraint extends Constraint
