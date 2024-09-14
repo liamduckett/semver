@@ -14,6 +14,7 @@ enum SingleConstraintType
     case RangeGreaterThanOrEqualTo;
     case RangeLessThanOrEqualTo;
     case HyphenatedRange;
+    case WildcardRange;
 
     public static function determine(string $constraint): self
     {
@@ -21,6 +22,7 @@ enum SingleConstraintType
 
         return match(true) {
             str_contains($constraint, '-') => self::HyphenatedRange,
+            str_contains($constraint, '*') => self::WildcardRange,
             $start === '<=' => self::RangeLessThanOrEqualTo,
             $start[0] === '<' => self::RangeLessThan,
             $start === '>=' => self::RangeGreaterThanOrEqualTo,

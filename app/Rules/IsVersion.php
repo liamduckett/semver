@@ -19,8 +19,8 @@ class IsVersion implements ValidationRule
             $fail('Version must be in the format MAJOR.MINOR.PATCH');
         }
 
-        foreach($semverParts as $semverPart) {
-            if($this->invalidInteger($semverPart)) {
+        foreach($semverParts as $semVerPart) {
+            if($this->invalidInteger($semVerPart)) {
                 $fail('Version MAJOR, MINOR and PATCH must all be integers');
             }
         }

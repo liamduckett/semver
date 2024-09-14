@@ -26,6 +26,7 @@ class IsConstraint implements ValidationRule
 
             match(true) {
                 $type === SingleConstraintType::HyphenatedRange => $this->validateHyphenatedRangeConstraint($constraint),
+                $type === SingleConstraintType::WildcardRange => $this->validatesWildcardRangeConstraint($constraint),
                 $type->requiresMajorMinorPatch() => $this->validateExactConstraint($constraint),
                 true => $this->validateInexactConstraint($constraint),
             };
@@ -106,8 +107,8 @@ class IsConstraint implements ValidationRule
             $this->fail("Range constraint '$constraint' must specify at least MAJOR");
         }
 
-        foreach($semVerParts as $semverPart) {
-            $this->validateInteger($semverPart);
+        foreach($semVerParts as $semVerPart) {
+            $this->validateInteger($semVerPart);
         }
     }
 
@@ -119,8 +120,37 @@ class IsConstraint implements ValidationRule
             $this->fail("Exact constraint '$constraint' must specify MAJOR, MINOR and PATCH");
         }
 
-        foreach($semVerParts as $semverPart) {
-            $this->validateInteger($semverPart);
+        foreach($semVerParts as $semVerPart) {
+            $this->validateInteger($semVerPart);
+        }
+    }
+
+    protected function validatesWildcardRangeConstraint(string $constraint): void
+    {
+        // make sure nothing is after it...
+
+        $semVerParts = explode('.', $constraint);
+
+        $asterisks = array_filter(
+            $semVerParts,
+            fn(string $semVerPart) => $semVerPart === '*',
+        );
+
+        if(count($asterisks) !== 1) {
+            $this->fail("Wildcard range constraint '$constraint' must have one asterisk");
+        }
+
+        $nonAsteriskSemVerParts = array_filter(
+            $semVerParts,
+            fn(string $semVerPart) => $semVerPart !== '*',
+        );
+
+        foreach($nonAsteriskSemVerParts as $semVerPart) {
+            $this->validateInteger($semVerPart);
+        }
+
+        if(strpos($constraint, '*') + 1 !== strlen($constraint)) {
+            $this->fail("Wildcard range constraint '$constraint' must end in an asterisk");
         }
     }
 
