@@ -82,7 +82,7 @@ readonly class PartialConstraint
             : $this->patch;
 
         return new SingleConstraint(
-            type: $this->type,
+            type: SingleConstraintType::GreaterThanOrEqualTo,
             major: $this->major,
             minor: $minor ?? 0,
             patch: $patch ?? 0,
@@ -91,19 +91,20 @@ readonly class PartialConstraint
 
     public function maximum(): SingleConstraint
     {
+        $major = $this->major;
+        $minor = $this->minor;
+
         if($this->patch instanceof Wildcard) {
-            return new SingleConstraint(
-                type: $this->type,
-                major: $this->major,
-                minor: $this->minor + 1,
-                patch: 0,
-            );
+            $minor += 1;
+        } else {
+            $major += 1;
+            $minor = 0;
         }
 
         return new SingleConstraint(
-            type: $this->type,
-            major: $this->major + 1,
-            minor: 0,
+            type: SingleConstraintType::LessThan,
+            major: $major,
+            minor: $minor,
             patch: 0,
         );
     }
