@@ -51,6 +51,27 @@ readonly class GroupConstraint extends Constraint
         );
     }
 
+    public static function fromWildcardRangeString(string $input): self
+    {
+        //       1.0.*
+        //        vvv
+        // >=1.0.0 , <1.1.0
+
+        $first = PartialConstraint::fromString($input)
+            ->changeType(SingleConstraintType::RangeGreaterThanOrEqualTo)
+            ->minimum();
+
+        $second = PartialConstraint::fromString($input)
+            ->changeType(SingleConstraintType::RangeLessThan)
+            ->maximum();
+
+        return new self(
+            first: $first,
+            second: $second,
+            operator: Operator::And,
+        );
+    }
+
     public function allows(Version $version): bool
     {
         return $this->operator->allows($version, $this);

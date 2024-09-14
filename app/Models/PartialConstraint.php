@@ -9,11 +9,27 @@ readonly class PartialConstraint
     public function __construct(
         public SingleConstraintType $type,
         public int $major,
-        public ?int $minor,
-        public ?int $patch,
+        public Wildcard|int|null $minor,
+        public Wildcard|int|null $patch,
     ) {}
 
     public static function fromString(string $input): self
+    {
+        $versionParts = explode('.', $input);
+        $versionParts = array_pad($versionParts, 3, null);
+
+        $type = SingleConstraintType::determine($input);
+        [$major, $minor, $patch] = self::convertWildcards($versionParts);
+
+        return new self(
+            type: $type,
+            major: $major,
+            minor: $minor,
+            patch: $patch,
+        );
+    }
+
+    public static function wildcard(string $input): self
     {
         $version = ltrim($input, '=<>!');
         $versionParts = explode('.', $version);
@@ -69,6 +85,53 @@ readonly class PartialConstraint
             major: $major,
             minor: $minor,
             patch: $patch,
+        );
+    }
+
+    public function minimum(): SingleConstraint
+    {
+        $minor = $this->minor instanceof Wildcard
+            ? 0
+            : $this->minor;
+
+        $patch = $this->patch instanceof Wildcard
+            ? 0
+            : $this->patch;
+
+        return new SingleConstraint(
+            type: $this->type,
+            major: $this->major,
+            minor: $minor ?? 0,
+            patch: $patch ?? 0,
+        );
+    }
+
+    public function maximum(): SingleConstraint
+    {
+        if($this->patch instanceof Wildcard) {
+            return new SingleConstraint(
+                type: $this->type,
+                major: $this->major,
+                minor: $this->minor + 1,
+                patch: 0,
+            );
+        }
+
+        return new SingleConstraint(
+            type: $this->type,
+            major: $this->major + 1,
+            minor: 0,
+            patch: 0,
+        );
+    }
+
+    // Internals
+
+    protected static function convertWildcards(array $versionParts): array
+    {
+        return array_map(
+            fn(?string $versionPart) => $versionPart === '*' ? new Wildcard : $versionPart,
+            $versionParts,
         );
     }
 }

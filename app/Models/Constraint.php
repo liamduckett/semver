@@ -10,10 +10,12 @@ readonly abstract class Constraint
 
         $isGroup = str_contains($input, ',') || str_contains($input, '||');
         $isHyphenatedRange = str_contains($input, '-');
+        $isWildcardRange = str_contains($input, '*');
 
         return match(true) {
             $isGroup => GroupConstraint::fromString($input),
             $isHyphenatedRange => GroupConstraint::fromHyphenatedRangeString($input),
+            $isWildcardRange => GroupConstraint::fromWildcardRangeString($input),
             true => SingleConstraint::fromString($input),
         };
     }
