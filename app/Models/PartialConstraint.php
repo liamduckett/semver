@@ -8,7 +8,7 @@ readonly class PartialConstraint
 {
     public function __construct(
         public SingleConstraintType $type,
-        public int $major,
+        public Wildcard|int $major,
         public Wildcard|int|null $minor,
         public Wildcard|int|null $patch,
     ) {}
@@ -20,23 +20,6 @@ readonly class PartialConstraint
 
         $type = SingleConstraintType::determine($input);
         [$major, $minor, $patch] = self::convertWildcards($versionParts);
-
-        return new self(
-            type: $type,
-            major: $major,
-            minor: $minor,
-            patch: $patch,
-        );
-    }
-
-    public static function wildcard(string $input): self
-    {
-        $version = ltrim($input, '=<>!');
-        $versionParts = explode('.', $version);
-        $versionParts = array_pad($versionParts, 3, null);
-
-        $type = SingleConstraintType::determine($input);
-        [$major, $minor, $patch] = $versionParts;
 
         return new self(
             type: $type,

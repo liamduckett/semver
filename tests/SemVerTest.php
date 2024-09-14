@@ -321,6 +321,14 @@ class SemVerTest extends TestCase
     }
 
     #[Test]
+    public function allows_wildcard_range_on_major(): void
+    {
+        $this->artisan('semver:check "*" 0.0.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
     public function rejects_range_greater_than_with_two_symbols(): void
     {
         $this->artisan('semver:check ">>7.0.0" 7.0.1')

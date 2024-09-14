@@ -51,17 +51,32 @@ readonly class GroupConstraint extends Constraint
         );
     }
 
-    public static function fromWildcardRangeString(string $input): self
+    public static function fromWildcardRangeString(string $input): parent
     {
         //       1.0.*
         //        vvv
         // >=1.0.0 , <1.1.0
 
-        $first = PartialConstraint::fromString($input)
+        //  *
+        // vvv
+        // >= 0.0.0
+
+        $partial = PartialConstraint::fromString($input);
+
+        if($partial->major instanceof Wildcard) {
+            return new SingleConstraint(
+                type: SingleConstraintType::RangeGreaterThanOrEqualTo,
+                major: 0,
+                minor: 0,
+                patch: 0,
+            );
+        }
+
+        $first = $partial
             ->changeType(SingleConstraintType::RangeGreaterThanOrEqualTo)
             ->minimum();
 
-        $second = PartialConstraint::fromString($input)
+        $second = $partial
             ->changeType(SingleConstraintType::RangeLessThan)
             ->maximum();
 
