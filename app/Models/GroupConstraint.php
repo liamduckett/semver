@@ -39,14 +39,14 @@ readonly class GroupConstraint extends Constraint
         //    vvv
         // >=1.0.0 , <2.0.1
 
-        $first = SingleConstraint::fromString($first)->changeType(SingleConstraintType::RangeGreaterThanOrEqualTo);
-        $second = SingleConstraint::fromString($second)->changeType(SingleConstraintType::RangeLessThan);
+        $first = PartialConstraint::fromString($first)->changeType(SingleConstraintType::RangeGreaterThanOrEqualTo);
+        $second = PartialConstraint::fromString($second)->changeType(SingleConstraintType::RangeLessThan);
 
         $second = $second->incrementLeastSignificant();
 
         return new self(
-            first: $first,
-            second: $second,
+            first: $first->toSingleConstraint(),
+            second: $second->toSingleConstraint(),
             operator: Operator::And,
         );
     }
