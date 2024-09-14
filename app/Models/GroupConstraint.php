@@ -39,8 +39,8 @@ readonly class GroupConstraint extends Constraint
         //    vvv
         // >=1.0.0 , <2.0.1
 
-        $first = PartialConstraint::fromString($first)->changeType(SingleConstraintType::RangeGreaterThanOrEqualTo);
-        $second = PartialConstraint::fromString($second)->changeType(SingleConstraintType::RangeLessThan);
+        $first = PartialConstraint::fromString($first)->changeType(SingleConstraintType::GreaterThanOrEqualTo);
+        $second = PartialConstraint::fromString($second)->changeType(SingleConstraintType::LessThan);
 
         $second = $second->incrementLeastSignificant();
 
@@ -65,7 +65,7 @@ readonly class GroupConstraint extends Constraint
 
         if($partial->major instanceof Wildcard) {
             return new SingleConstraint(
-                type: SingleConstraintType::RangeGreaterThanOrEqualTo,
+                type: SingleConstraintType::GreaterThanOrEqualTo,
                 major: 0,
                 minor: 0,
                 patch: 0,
@@ -73,11 +73,11 @@ readonly class GroupConstraint extends Constraint
         }
 
         $first = $partial
-            ->changeType(SingleConstraintType::RangeGreaterThanOrEqualTo)
+            ->changeType(SingleConstraintType::GreaterThanOrEqualTo)
             ->minimum();
 
         $second = $partial
-            ->changeType(SingleConstraintType::RangeLessThan)
+            ->changeType(SingleConstraintType::LessThan)
             ->maximum();
 
         return new self(
