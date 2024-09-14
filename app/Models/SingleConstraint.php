@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\Operator;
 use App\Enums\SingleConstraintType;
 
 readonly class SingleConstraint extends Constraint
@@ -10,15 +9,15 @@ readonly class SingleConstraint extends Constraint
     public function __construct(
         public SingleConstraintType $type,
         public int $major,
-        public int $minor,
-        public int $patch,
+        public ?int $minor,
+        public ?int $patch,
     ) {}
 
     public static function fromString(string $input): self
     {
         $version = ltrim($input, '=<>!');
         $versionParts = explode('.', $version);
-        $versionParts = array_pad($versionParts, 3, 0);
+        $versionParts = array_pad($versionParts, 3, null);
 
         $type = SingleConstraintType::determine($input);
         [$major, $minor, $patch] = $versionParts;
@@ -50,11 +49,21 @@ readonly class SingleConstraint extends Constraint
 
     public function incrementLeastSignificant(): self
     {
+        $major = $this->major;
+        $minor = $this->minor;
+        $patch = $this->patch;
+
+        match(true) {
+            $patch !== null => $patch += 1,
+            $minor !== null => $minor += 1,
+            true => $major += 1,
+        };
+
         return new self(
             type: $this->type,
-            major: $this->major,
-            minor: $this->minor,
-            patch: $this->patch + 1,
+            major: $major,
+            minor: $minor,
+            patch: $patch,
         );
     }
 }
