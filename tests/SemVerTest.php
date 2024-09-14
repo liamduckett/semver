@@ -241,6 +241,14 @@ class SemVerTest extends TestCase
     }
 
     #[Test]
+    public function allows_hyphenated_range_with_or(): void
+    {
+        $this->artisan('semver:check "7.0.0 - 8.0.0 || 9.0.1" 7.5.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
     public function rejects_basic_hyphenated_range(): void
     {
         $this->artisan('semver:check "7.0.0 - 8.0.0" 6.9.9')

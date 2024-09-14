@@ -9,10 +9,15 @@ readonly abstract class Constraint
 {
     public static function create(string $input): self
     {
+        // TODO: only do hypenrange if it has no AND / OR
+
+        $input = str_replace(' ', '', $input);
+        $isGroup = str_contains($input, ',') || str_contains($input, '||');
+
         // if we need to convert from hyphenated range to Group of ranges...
         $isHyphenatedRange = str_contains($input, '-');
 
-        if($isHyphenatedRange) {
+        if(!$isGroup && $isHyphenatedRange) {
             [$first, $second] = explode('-', $input);
 
             // 1.0.0 - 2.0.0
@@ -30,9 +35,6 @@ readonly abstract class Constraint
                 operator: Operator::And,
             );
         }
-
-        $input = str_replace(' ', '', $input);
-        $isGroup = str_contains($input, ',') || str_contains($input, '||');
 
         return $isGroup
             ? GroupConstraint::fromString($input)
