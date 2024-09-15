@@ -2,7 +2,6 @@
 
 namespace App\Rules;
 
-use App\Enums\SingleConstraintType;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
@@ -22,13 +21,11 @@ class IsConstraint implements ValidationRule
         $constraints = $this->split($value);
 
         foreach($constraints as $constraint) {
-            $type = SingleConstraintType::determine($constraint);
-
             match(true) {
                 str_contains($constraint, '-') => $this->validateHyphenatedRangeConstraint($constraint),
                 str_contains($constraint, '*') => $this->validatesWildcardRangeConstraint($constraint),
-                $type->requiresMajorMinorPatch() => $this->validateExactConstraint($constraint),
-                true => $this->validateInexactConstraint($constraint),
+                str_starts_with($constraint, '<') || str_starts_with($constraint, '>') => $this->validateInexactConstraint($constraint),
+                true => $this->validateExactConstraint($constraint),
             };
         }
     }
