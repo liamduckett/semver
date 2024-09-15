@@ -10,15 +10,23 @@ use Symfony\Component\Console\Command\Command;
 class CaretRangeTest extends TestCase
 {
     #[Test]
-    public function allows_caret_range_on_patch(): void
+    public function passes_positive_caret_on_patch(): void
     {
-        $this->artisan('semver:check "^1.2.3" 1.4.5')
+        $this->artisan('semver:check "^1.2.3" 1.2.4')
             ->expectsOutput('Pass')
             ->assertExitCode(Command::SUCCESS);
     }
 
     #[Test]
-    public function allows_caret_range_on_patch_lower_bound(): void
+    public function passes_positive_caret_on_minor(): void
+    {
+        $this->artisan('semver:check "^1.2.3" 1.3.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function passes_positive_caret_lower_bound(): void
     {
         $this->artisan('semver:check "^1.2.3" 1.2.3')
             ->expectsOutput('Pass')
@@ -26,7 +34,7 @@ class CaretRangeTest extends TestCase
     }
 
     #[Test]
-    public function rejects_caret_range_on_patch_upper_bound(): void
+    public function fails_negative_caret_on_major(): void
     {
         $this->artisan('semver:check "^1.2.3" 2.0.0')
             ->expectsOutput('Fail')
@@ -34,15 +42,55 @@ class CaretRangeTest extends TestCase
     }
 
     #[Test]
-    public function allows_caret_range_on_major(): void
+    public function passes_positive_caret_missing_patch_on_patch(): void
     {
-        $this->artisan('semver:check "^1" 1.2.5')
+        $this->artisan('semver:check "^1.2" 1.2.1')
             ->expectsOutput('Pass')
             ->assertExitCode(Command::SUCCESS);
     }
 
     #[Test]
-    public function allows_caret_range_on_major_lower_bound(): void
+    public function passes_positive_caret_missing_patch_on_minor(): void
+    {
+        $this->artisan('semver:check "^1.2" 1.3.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function passes_positive_caret_missing_patch_lower_bound(): void
+    {
+        $this->artisan('semver:check "^1.2" 1.2.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function fails_negative_caret_missing_patch_on_major(): void
+    {
+        $this->artisan('semver:check "^1.2" 2.0.0')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function passes_positive_caret_missing_minor_on_patch(): void
+    {
+        $this->artisan('semver:check "^1" 1.0.1')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function passes_positive_caret_missing_minor_on_minor(): void
+    {
+        $this->artisan('semver:check "^1" 1.1.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function passes_positive_caret_missing_minor_lower_bound(): void
     {
         $this->artisan('semver:check "^1" 1.0.0')
             ->expectsOutput('Pass')
@@ -50,7 +98,7 @@ class CaretRangeTest extends TestCase
     }
 
     #[Test]
-    public function rejects_caret_range_on_major_upper_bound(): void
+    public function fails_negative_caret_missing_minor_on_major(): void
     {
         $this->artisan('semver:check "^1" 2.0.0')
             ->expectsOutput('Fail')
@@ -58,17 +106,65 @@ class CaretRangeTest extends TestCase
     }
 
     #[Test]
-    public function passes_positive_tilde_range_on_pre_release(): void
+    public function passes_positive_caret_pre_release_on_patch(): void
     {
-        $this->artisan('semver:check "^0.3" 0.3.5')
+        $this->artisan('semver:check "^0.2.3" 0.2.4')
             ->expectsOutput('Pass')
             ->assertExitCode(Command::SUCCESS);
     }
 
     #[Test]
-    public function fails_negative_tilde_range_on_pre_release(): void
+    public function passes_positive_caret_pre_release_lower_bound(): void
     {
-        $this->artisan('semver:check "^0.3" 0.4.0')
+        $this->artisan('semver:check "^0.2.3" 0.2.3')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function fails_negative_caret_pre_release_on_minor(): void
+    {
+        $this->artisan('semver:check "^0.2.3" 0.3.0')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function fails_negative_caret_pre_release_on_major(): void
+    {
+        $this->artisan('semver:check "^0.2.3" 1.0.0')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function passes_positive_caret_pre_release_missing_patch_on_patch(): void
+    {
+        $this->artisan('semver:check "^0.2" 0.2.1')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function passes_positive_caret_pre_release_missing_patch_lower_bound(): void
+    {
+        $this->artisan('semver:check "^0.2" 0.2.0')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function fails_negative_caret_pre_release_missing_patch_on_minor(): void
+    {
+        $this->artisan('semver:check "^0.2" 0.3.0')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function fails_negative_caret_pre_release_missing_patch_on_major(): void
+    {
+        $this->artisan('semver:check "^0.2" 1.0.0')
             ->expectsOutput('Fail')
             ->assertExitCode(Command::SUCCESS);
     }
