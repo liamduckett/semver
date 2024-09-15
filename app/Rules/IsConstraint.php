@@ -31,7 +31,7 @@ class IsConstraint implements ValidationRule
         }
     }
 
-    // Internal
+    // Internals
 
     protected function fail(string $message): void
     {

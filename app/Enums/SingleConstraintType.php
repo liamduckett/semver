@@ -38,19 +38,7 @@ enum SingleConstraintType
         };
     }
 
-    public function requiresMajorMinorPatch(): bool
-    {
-        return match($this) {
-            self::LessThanOrEqualTo => false,
-            self::LessThan => false,
-            self::GreaterThanOrEqualTo => false,
-            self::GreaterThan => false,
-            self::Not => true,
-            self::Exact => true,
-        };
-    }
-
-    // Internal
+    // Internals
 
     protected function isEqualTo(SingleConstraint $constraint, Version $version): bool
     {
