@@ -6,7 +6,7 @@ use App\Enums\Operator;
 use App\Models\Constraint;
 use App\Models\Version;
 
-readonly class GroupConstraint extends Constraint
+final readonly class GroupConstraint extends Constraint
 {
     public function __construct(
         public Constraint $first,

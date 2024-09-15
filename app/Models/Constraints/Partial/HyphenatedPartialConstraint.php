@@ -3,15 +3,16 @@
 namespace App\Models\Constraints\Partial;
 
 use App\Enums\SingleConstraintType;
+use App\Models\Constraints\PartialConstraint;
 use App\Models\Constraints\SingleConstraint;
 
-readonly class HyphenatedPartialConstraint extends PartialConstraint
+final readonly class HyphenatedPartialConstraint extends PartialConstraint
 {
     // 1.0.0 - 2.0.0
     // --- to ---
     // >=1.0.0 , <2.0.1
 
-    public function __construct(
+    protected function __construct(
         public int $major,
         public int|null $minor,
         public int|null $patch,

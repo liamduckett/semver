@@ -3,15 +3,16 @@
 namespace App\Models\Constraints\Partial;
 
 use App\Enums\SingleConstraintType;
+use App\Models\Constraints\PartialConstraint;
 use App\Models\Constraints\SingleConstraint;
 
-readonly class CaretPartialConstraint extends PartialConstraint
+final readonly class CaretPartialConstraint extends PartialConstraint
 {
     // ^1.2.3
     // --- to ---
     // >=1.2.3 , <2.0.0
 
-    public function __construct(
+    protected function __construct(
         public int $major,
         public int|null $minor,
         public int|null $patch,

@@ -3,9 +3,10 @@
 namespace App\Models\Constraints\Partial;
 
 use App\Enums\SingleConstraintType;
+use App\Models\Constraints\PartialConstraint;
 use App\Models\Constraints\SingleConstraint;
 
-readonly class WildcardPartialConstraint extends PartialConstraint
+final readonly class WildcardPartialConstraint extends PartialConstraint
 {
     // 1.0.*
     // --- to ---
@@ -15,7 +16,7 @@ readonly class WildcardPartialConstraint extends PartialConstraint
     // --- to ---
     // >= 0.0.0
 
-    public function __construct(
+    protected function __construct(
         public Wildcard|int         $major,
         public Wildcard|int|null    $minor,
         public Wildcard|int|null    $patch,

@@ -3,15 +3,16 @@
 namespace App\Models\Constraints\Partial;
 
 use App\Enums\SingleConstraintType;
+use App\Models\Constraints\PartialConstraint;
 use App\Models\Constraints\SingleConstraint;
 
-readonly class TildePartialConstraint extends PartialConstraint
+final readonly class TildePartialConstraint extends PartialConstraint
 {
     // ~1.2
     // --- to ---
     // >=1.2.0 , <2.0.0
 
-    public function __construct(
+    protected function __construct(
         public int $major,
         public int|null $minor,
         public int|null $patch,
