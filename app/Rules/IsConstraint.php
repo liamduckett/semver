@@ -24,6 +24,7 @@ class IsConstraint implements ValidationRule
             match(true) {
                 str_contains($constraint, '-') => $this->validateHyphenatedRangeConstraint($constraint),
                 str_contains($constraint, '*') => $this->validatesWildcardRangeConstraint($constraint),
+                str_starts_with($constraint, '~') => $this->validateInexactConstraint($constraint),
                 str_starts_with($constraint, '<') || str_starts_with($constraint, '>') => $this->validateInexactConstraint($constraint),
                 true => $this->validateExactConstraint($constraint),
             };
@@ -76,6 +77,10 @@ class IsConstraint implements ValidationRule
             $value = substr($value, 2);
         }
 
+        elseif(str_starts_with($value, '~')) {
+            $value = substr($value, 1);
+        }
+
         return explode('.', $value);
     }
 
@@ -96,6 +101,7 @@ class IsConstraint implements ValidationRule
             $this->validateInexactConstraint($constraint);
         }
     }
+
     protected function validateInexactConstraint(string $constraint): void
     {
         $semVerParts = $this->getSemVerParts($constraint);
@@ -124,8 +130,6 @@ class IsConstraint implements ValidationRule
 
     protected function validatesWildcardRangeConstraint(string $constraint): void
     {
-        // make sure nothing is after it...
-
         $semVerParts = explode('.', $constraint);
 
         $asterisks = array_filter(
