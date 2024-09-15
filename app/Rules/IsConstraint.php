@@ -25,6 +25,7 @@ class IsConstraint implements ValidationRule
                 str_contains($constraint, '-') => $this->validateHyphenatedRangeConstraint($constraint),
                 str_contains($constraint, '*') => $this->validatesWildcardRangeConstraint($constraint),
                 str_starts_with($constraint, '~') => $this->validateInexactConstraint($constraint),
+                str_starts_with($constraint, '^') => $this->validateInexactConstraint($constraint),
                 str_starts_with($constraint, '<') || str_starts_with($constraint, '>') => $this->validateInexactConstraint($constraint),
                 true => $this->validateExactConstraint($constraint),
             };
@@ -81,6 +82,10 @@ class IsConstraint implements ValidationRule
             $value = substr($value, 1);
         }
 
+        elseif(str_starts_with($value, '^')) {
+            $value = substr($value, 1);
+        }
+
         return explode('.', $value);
     }
 
@@ -107,7 +112,7 @@ class IsConstraint implements ValidationRule
         $semVerParts = $this->getSemVerParts($constraint);
 
         if(count($semVerParts) < 1) {
-            $this->fail("Range constraint '$constraint' must specify at least MAJOR");
+            $this->fail("Inexact constraint '$constraint' must specify at least MAJOR");
         }
 
         foreach($semVerParts as $semVerPart) {
