@@ -2,7 +2,9 @@
 
 namespace App\Models\Constraints\Partial;
 
+use App\Enums\Operator;
 use App\Enums\SingleConstraintType;
+use App\Models\Constraints\GroupConstraint;
 use App\Models\Constraints\PartialConstraint;
 use App\Models\Constraints\SingleConstraint;
 
@@ -32,7 +34,23 @@ final readonly class CaretPartialConstraint extends PartialConstraint
         );
     }
 
-    public function minimum(): SingleConstraint
+    public static function transform(string $input): GroupConstraint
+    {
+        $partial = CaretPartialConstraint::fromString($input);
+
+        $first = $partial->minimum();
+        $second = $partial->maximum();
+
+        return new GroupConstraint(
+            first: $first,
+            second: $second,
+            operator: Operator::And,
+        );
+    }
+
+    // Internals
+
+    protected function minimum(): SingleConstraint
     {
         return new SingleConstraint(
             type: SingleConstraintType::GreaterThanOrEqualTo,
@@ -42,7 +60,7 @@ final readonly class CaretPartialConstraint extends PartialConstraint
         );
     }
 
-    public function maximum(): SingleConstraint
+    protected function maximum(): SingleConstraint
     {
         return new SingleConstraint(
             type: SingleConstraintType::LessThan,

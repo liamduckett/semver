@@ -2,12 +2,10 @@
 
 namespace App\Models\Constraints;
 
+use App\Models\Constraint;
+
 readonly abstract class PartialConstraint
 {
-    // Modifications
-
-    abstract public function minimum(): SingleConstraint;
-
-    abstract public function maximum(): SingleConstraint;
+    abstract public static function transform(string $input): Constraint;
 }
 

@@ -2,7 +2,10 @@
 
 namespace App\Models\Constraints\Partial;
 
+use App\Enums\Operator;
 use App\Enums\SingleConstraintType;
+use App\Models\Constraint;
+use App\Models\Constraints\GroupConstraint;
 use App\Models\Constraints\PartialConstraint;
 use App\Models\Constraints\SingleConstraint;
 
@@ -35,7 +38,32 @@ final readonly class WildcardPartialConstraint extends PartialConstraint
         );
     }
 
-    public function minimum(): SingleConstraint
+    public static function transform(string $input): Constraint
+    {
+        $partial = WildcardPartialConstraint::fromString($input);
+
+        if($partial->major instanceof Wildcard) {
+            return new SingleConstraint(
+                type: SingleConstraintType::GreaterThanOrEqualTo,
+                major: 0,
+                minor: 0,
+                patch: 0,
+            );
+        }
+
+        $first = $partial->minimum();
+        $second = $partial->maximum();
+
+        return new GroupConstraint(
+            first: $first,
+            second: $second,
+            operator: Operator::And,
+        );
+    }
+
+    // Internals
+
+    protected function minimum(): SingleConstraint
     {
         $minor = $this->minor instanceof Wildcard
             ? 0
@@ -53,7 +81,7 @@ final readonly class WildcardPartialConstraint extends PartialConstraint
         );
     }
 
-    public function maximum(): SingleConstraint
+    protected function maximum(): SingleConstraint
     {
         $major = $this->major;
         $minor = $this->minor;
@@ -72,8 +100,6 @@ final readonly class WildcardPartialConstraint extends PartialConstraint
             patch: 0,
         );
     }
-
-    // Internals
 
     /**
      * @param list<string> $versionParts
