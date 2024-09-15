@@ -75,6 +75,10 @@ final readonly class WildcardPartialConstraint extends PartialConstraint
 
     // Internals
 
+    /**
+     * @param list<string> $versionParts
+     * @return list<Wildcard|string>
+     */
     protected static function convertWildcards(array $versionParts): array
     {
         return array_map(

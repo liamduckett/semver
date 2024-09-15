@@ -14,6 +14,11 @@ final readonly class Version
     {
         $versionParts = explode('.', $input);
 
+        $versionParts = array_map(
+            fn(string $versionPart) => (int) $versionPart,
+            $versionParts,
+        );
+
         [$major, $minor, $patch] = $versionParts;
 
         return new self(

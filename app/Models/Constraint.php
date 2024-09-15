@@ -11,6 +11,7 @@ use App\Models\Constraints\Partial\TildePartialConstraint;
 use App\Models\Constraints\Partial\Wildcard;
 use App\Models\Constraints\Partial\WildcardPartialConstraint;
 use App\Models\Constraints\SingleConstraint;
+use LogicException;
 
 readonly abstract class Constraint
 {
@@ -18,15 +19,9 @@ readonly abstract class Constraint
     {
         $input = str_replace(' ', '', $input);
 
-        $isGroup = str_contains($input, ',') || str_contains($input, '||');
-        $needsTransform = str_contains($input, '-')
-            || str_contains($input, '*')
-            || str_starts_with($input, '~')
-            || str_starts_with($input, '^');
-
         return match(true) {
-            $isGroup => GroupConstraint::fromString($input),
-            $needsTransform => self::handleTransforms($input),
+            self::isGroup($input) => GroupConstraint::fromString($input),
+            self::needsTransform($input) => self::handleTransforms($input),
             true => SingleConstraint::fromString($input),
         };
     }
@@ -37,6 +32,19 @@ readonly abstract class Constraint
 
     // Internals
 
+    protected static function isGroup(string $input): bool
+    {
+        return str_contains($input, ',') || str_contains($input, '||');
+    }
+
+    protected static function needsTransform(string $input): bool
+    {
+        return str_contains($input, '-')
+            || str_contains($input, '*')
+            || str_starts_with($input, '~')
+            || str_starts_with($input, '^');
+    }
+
     protected static function handleTransforms(string $input): self
     {
         return match(true) {
@@ -44,6 +52,7 @@ readonly abstract class Constraint
             str_contains($input, '*') => self::handleWildcardRangeTransform($input),
             str_starts_with($input, '~') => self::handleTildeRangeTransform($input),
             str_starts_with($input, '^') => self::handleCaretRangeTransform($input),
+            default => new LogicException("Untransformable Constraint passed to Constraint Transformer"),
         };
     }
 

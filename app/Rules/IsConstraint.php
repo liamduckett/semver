@@ -39,6 +39,10 @@ class IsConstraint implements ValidationRule
         ($this->fail)($message);
     }
 
+    /**
+     * @param string $constraint
+     * @return list<string>
+     */
     protected function split(string $constraint): array
     {
         // don't allow any @ - we use this internally...
@@ -56,6 +60,10 @@ class IsConstraint implements ValidationRule
         return explode('@', $constraint);
     }
 
+    /**
+     * @param string $value
+     * @return list<string>
+     */
     protected function getSemVerParts(string $value): array
     {
         if(str_starts_with($value, '>=')) {
