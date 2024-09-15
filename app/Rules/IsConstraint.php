@@ -50,7 +50,6 @@ class IsConstraint implements ValidationRule
             $this->fail('Invalid character detected');
         }
 
-        // remove spaces
         $constraint = str_replace(' ', '', $constraint);
 
         // convert special characters to @

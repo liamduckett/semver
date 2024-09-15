@@ -62,6 +62,15 @@ final readonly class CaretPartialConstraint extends PartialConstraint
 
     protected function maximum(): SingleConstraint
     {
+        if($this->major === 0) {
+            return new SingleConstraint(
+                type: SingleConstraintType::LessThan,
+                major: 0,
+                minor: $this->minor + 1,
+                patch: 0,
+            );
+        }
+
         return new SingleConstraint(
             type: SingleConstraintType::LessThan,
             major: $this->major + 1,

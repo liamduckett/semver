@@ -66,7 +66,6 @@ final readonly class TildePartialConstraint extends PartialConstraint
         $minor = $this->minor;
         $patch = $this->patch;
 
-        // pre-release... 0.x.y: incrementing x can have breaking changes
         if($major === 0) {
             return new SingleConstraint(
                 type: SingleConstraintType::LessThan,
