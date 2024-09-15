@@ -25,8 +25,8 @@ class IsConstraint implements ValidationRule
             $type = SingleConstraintType::determine($constraint);
 
             match(true) {
-                $type === SingleConstraintType::HyphenatedRange => $this->validateHyphenatedRangeConstraint($constraint),
-                $type === SingleConstraintType::WildcardRange => $this->validatesWildcardRangeConstraint($constraint),
+                str_contains($constraint, '-') => $this->validateHyphenatedRangeConstraint($constraint),
+                str_contains($constraint, '*') => $this->validatesWildcardRangeConstraint($constraint),
                 $type->requiresMajorMinorPatch() => $this->validateExactConstraint($constraint),
                 true => $this->validateInexactConstraint($constraint),
             };

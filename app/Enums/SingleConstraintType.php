@@ -13,16 +13,12 @@ enum SingleConstraintType
     case LessThan;
     case GreaterThanOrEqualTo;
     case LessThanOrEqualTo;
-    case HyphenatedRange;
-    case WildcardRange;
 
     public static function determine(string $constraint): self
     {
         $start = substr($constraint, 0, 2);
 
         return match(true) {
-            str_contains($constraint, '-') => self::HyphenatedRange,
-            str_contains($constraint, '*') => self::WildcardRange,
             $start === '<=' => self::LessThanOrEqualTo,
             $start[0] === '<' => self::LessThan,
             $start === '>=' => self::GreaterThanOrEqualTo,
