@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Operator;
 use App\Enums\SingleConstraintType;
 use App\Models\Constraints\GroupConstraint;
+use App\Models\Constraints\Partial\CaretPartialConstraint;
 use App\Models\Constraints\Partial\HyphenatedPartialConstraint;
 use App\Models\Constraints\Partial\TildePartialConstraint;
 use App\Models\Constraints\Partial\Wildcard;
@@ -99,7 +100,7 @@ readonly abstract class Constraint
 
     protected static function handleCaretRangeTransform(string $input): self
     {
-        $partial = TildePartialConstraint::fromString($input);
+        $partial = CaretPartialConstraint::fromString($input);
 
         $first = $partial->minimum();
         $second = $partial->maximum();

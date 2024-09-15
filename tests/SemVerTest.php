@@ -403,7 +403,7 @@ class SemVerTest extends TestCase
     #[Test]
     public function allows_caret_range_on_patch(): void
     {
-        $this->artisan('semver:check "^1.2.3" 1.2.5')
+        $this->artisan('semver:check "^1.2.3" 1.4.5')
             ->expectsOutput('Pass')
             ->assertExitCode(Command::SUCCESS);
     }
