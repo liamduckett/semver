@@ -80,4 +80,20 @@ class TildeRangeTest extends TestCase
             ->expectsOutput('Fail')
             ->assertExitCode(Command::SUCCESS);
     }
+
+    #[Test]
+    public function passes_positive_tilde_range_on_pre_release(): void
+    {
+        $this->artisan('semver:check "~0.3" 0.3.5')
+            ->expectsOutput('Pass')
+            ->assertExitCode(Command::SUCCESS);
+    }
+
+    #[Test]
+    public function fails_negative_tilde_range_on_pre_release(): void
+    {
+        $this->artisan('semver:check "~0.3" 0.4.0')
+            ->expectsOutput('Fail')
+            ->assertExitCode(Command::SUCCESS);
+    }
 }
