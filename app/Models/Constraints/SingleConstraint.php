@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Constraints;
 
 use App\Enums\SingleConstraintType;
+use App\Models\Constraint;
+use App\Models\Version;
 
 readonly class SingleConstraint extends Constraint
 {

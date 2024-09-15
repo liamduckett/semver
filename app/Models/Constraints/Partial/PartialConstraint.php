@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Constraints\Partial;
+
+use App\Models\Constraints\SingleConstraint;
 
 readonly abstract class PartialConstraint
 {

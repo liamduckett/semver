@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Constraints\Partial;
 
 use App\Enums\SingleConstraintType;
+use App\Models\Constraints\SingleConstraint;
 
-readonly class HyphenatedPartialConstraint extends PartialConstraint
+readonly class TildePartialConstraint extends PartialConstraint
 {
-    // 1.0.0 - 2.0.0
+    // ~1.2
     // --- to ---
-    // >=1.0.0 , <2.0.1
+    // >=1.2.0 , <2.0.0
 
     public function __construct(
         public int $major,
@@ -18,6 +19,7 @@ readonly class HyphenatedPartialConstraint extends PartialConstraint
 
     public static function fromString(string $input): self
     {
+        $input = substr($input, 1);
         $versionParts = explode('.', $input);
         $versionParts = array_pad($versionParts, 3, null);
         [$major, $minor, $patch] = $versionParts;
@@ -45,17 +47,26 @@ readonly class HyphenatedPartialConstraint extends PartialConstraint
         $minor = $this->minor;
         $patch = $this->patch;
 
-        match (true) {
-            $patch !== null => $patch += 1,
-            $minor !== null => $minor += 1,
-            true => $major += 1,
-        };
+        // ~1 => ~1.0
+        if($minor === null) {
+            $minor = 0;
+        }
+
+        // ~1.2 => <2.0.0
+        if($patch === null) {
+            $major += 1;
+            $minor = 0;
+        }
+        // ~1.2.3 => <1.3
+        else {
+            $minor += 1;
+        }
 
         return new SingleConstraint(
             type: SingleConstraintType::LessThan,
             major: $major,
-            minor: $minor ?? 0,
-            patch: $patch ?? 0,
+            minor: $minor,
+            patch: 0,
         );
     }
 }

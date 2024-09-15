@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Constraints\Partial;
 
 use App\Enums\SingleConstraintType;
+use App\Models\Constraints\SingleConstraint;
 
 readonly class WildcardPartialConstraint extends PartialConstraint
 {

@@ -4,6 +4,12 @@ namespace App\Models;
 
 use App\Enums\Operator;
 use App\Enums\SingleConstraintType;
+use App\Models\Constraints\GroupConstraint;
+use App\Models\Constraints\Partial\HyphenatedPartialConstraint;
+use App\Models\Constraints\Partial\TildePartialConstraint;
+use App\Models\Constraints\Partial\Wildcard;
+use App\Models\Constraints\Partial\WildcardPartialConstraint;
+use App\Models\Constraints\SingleConstraint;
 
 readonly abstract class Constraint
 {

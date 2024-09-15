@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-use App\Models\SingleConstraint;
+use App\Models\Constraints\SingleConstraint;
 use App\Models\Version;
 
 enum SingleConstraintType

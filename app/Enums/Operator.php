@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-use App\Models\GroupConstraint;
+use App\Models\Constraints\GroupConstraint;
 use App\Models\Version;
 
 enum Operator: string
