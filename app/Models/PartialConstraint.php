@@ -8,9 +8,9 @@ readonly class PartialConstraint
 {
     public function __construct(
         public SingleConstraintType $type,
-        public Wildcard|int $major,
-        public Wildcard|int|null $minor,
-        public Wildcard|int|null $patch,
+        public Wildcard|int         $major,
+        public Wildcard|int|null    $minor,
+        public Wildcard|int|null    $patch,
     ) {}
 
     public static function fromString(string $input): self
@@ -51,44 +51,10 @@ readonly class PartialConstraint
 
     public function maximum(): SingleConstraint
     {
-        // detect whether wildcard, or hyphenated range
-
-        // WILDCARD
-        if($this->hasWildcard()) {
-            $major = $this->major;
-            $minor = $this->minor;
-
-            if($this->patch instanceof Wildcard) {
-                $minor += 1;
-            } else {
-                $major += 1;
-                $minor = 0;
-            }
-
-            return new SingleConstraint(
-                type: SingleConstraintType::LessThan,
-                major: $major,
-                minor: $minor,
-                patch: 0,
-            );
-        } else {
-            $major = $this->major;
-            $minor = $this->minor;
-            $patch = $this->patch;
-
-            match(true) {
-                $patch !== null => $patch += 1,
-                $minor !== null => $minor += 1,
-                true => $major += 1,
-            };
-
-            return new SingleConstraint(
-                type: SingleConstraintType::LessThan,
-                major: $major,
-                minor: $minor ?? 0,
-                patch: $patch ?? 0,
-            );
-        }
+        return match($this->hasWildcard()) {
+            true => $this->maximumWildcard(),
+            false => $this->maximumHyphenated(),
+        };
     }
 
     // Internals
@@ -106,4 +72,45 @@ readonly class PartialConstraint
             $versionParts,
         );
     }
+
+    protected function maximumHyphenated(): SingleConstraint
+    {
+        $major = $this->major;
+        $minor = $this->minor;
+        $patch = $this->patch;
+
+        match (true) {
+            $patch !== null => $patch += 1,
+            $minor !== null => $minor += 1,
+            true => $major += 1,
+        };
+
+        return new SingleConstraint(
+            type: SingleConstraintType::LessThan,
+            major: $major,
+            minor: $minor ?? 0,
+            patch: $patch ?? 0,
+        );
+    }
+
+    protected function maximumWildcard(): SingleConstraint
+    {
+        $major = $this->major;
+        $minor = $this->minor;
+
+        if ($this->patch instanceof Wildcard) {
+            $minor += 1;
+        } else {
+            $major += 1;
+            $minor = 0;
+        }
+
+        return new SingleConstraint(
+            type: SingleConstraintType::LessThan,
+            major: $major,
+            minor: $minor,
+            patch: 0,
+        );
+    }
 }
+
