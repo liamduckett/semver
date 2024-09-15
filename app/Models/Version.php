@@ -2,16 +2,24 @@
 
 namespace App\Models;
 
-readonly class Version
+final readonly class Version
 {
-    public int $major;
-    public int $minor;
-    public int $patch;
+    protected function __construct(
+        public int $major,
+        public int $minor,
+        public int $patch,
+    ) {}
 
-    public function __construct(string $version)
+    public static function fromString(string $input): self
     {
-        $versionParts = explode('.', $version);
+        $versionParts = explode('.', $input);
 
-        [$this->major, $this->minor, $this->patch] = $versionParts;
+        [$major, $minor, $patch] = $versionParts;
+
+        return new self(
+            major: $major,
+            minor: $minor,
+            patch: $patch,
+        );
     }
 }
