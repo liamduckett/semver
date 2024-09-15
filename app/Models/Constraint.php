@@ -40,9 +40,6 @@ readonly abstract class Constraint
     {
         [$first, $second] = explode('-', $input);
 
-        // 1.0.0 - 2.0.0
-        // >=1.0.0 , <2.0.1
-
         $first = HyphenatedPartialConstraint::fromString($first)->minimum();
         $second = HyphenatedPartialConstraint::fromString($second)->maximum();
 
@@ -55,12 +52,6 @@ readonly abstract class Constraint
 
     protected static function handleWildcardRangeTransform(string $input): self
     {
-        // 1.0.*
-        // >=1.0.0 , <1.1.0
-
-        //  *
-        // >= 0.0.0
-
         $partial = WildcardPartialConstraint::fromString($input);
 
         if($partial->major instanceof Wildcard) {
@@ -84,10 +75,7 @@ readonly abstract class Constraint
 
     protected static function handleTildeRangeTransform(string $input): self
     {
-        // ~1.2
-        // >=1.2 <2.0.0
-
-        $partial = PartialConstraint::fromString($input);
+        $partial = TildePartialConstraint::fromString($input);
 
         $first = $partial->minimum();
         $second = $partial->maximum();

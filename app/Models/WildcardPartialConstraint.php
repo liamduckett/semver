@@ -6,6 +6,14 @@ use App\Enums\SingleConstraintType;
 
 readonly class WildcardPartialConstraint extends PartialConstraint
 {
+    // 1.0.*
+    // --- to ---
+    // >=1.0.0 , <1.1.0
+
+    //  *
+    // --- to ---
+    // >= 0.0.0
+
     public function __construct(
         public Wildcard|int         $major,
         public Wildcard|int|null    $minor,
