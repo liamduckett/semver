@@ -10,7 +10,7 @@ use Symfony\Component\Console\Command\Command;
 class NotTest extends TestCase
 {
     #[Test]
-    public function allows_not_check(): void
+    public function passes_positive_not_check(): void
     {
         $this->artisan('semver:check "!=8.0.0" 8.0.1')
             ->expectsOutput('Pass')
@@ -18,7 +18,7 @@ class NotTest extends TestCase
     }
 
     #[Test]
-    public function returns_failure_for_not_check(): void
+    public function fails_negative_not_check(): void
     {
         $this->artisan('semver:check "!=8.0.0" 8.0.0')
             ->expectsOutput('Fail')
