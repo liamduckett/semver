@@ -16,14 +16,12 @@ enum SingleConstraintType
 
     public static function determine(string $constraint): self
     {
-        $start = substr($constraint, 0, 2);
-
         return match(true) {
-            $start === '<=' => self::LessThanOrEqualTo,
-            $start[0] === '<' => self::LessThan,
-            $start === '>=' => self::GreaterThanOrEqualTo,
-            $start[0] === '>' => self::GreaterThan,
-            $start === '!=' => self::Not,
+            str_starts_with($constraint, '<=') => self::LessThanOrEqualTo,
+            str_starts_with($constraint, '<') => self::LessThan,
+            str_starts_with($constraint, '>=') => self::GreaterThanOrEqualTo,
+            str_starts_with($constraint, '>') => self::GreaterThan,
+            str_starts_with($constraint, '!=') => self::Not,
             true => self::Exact,
         };
     }
