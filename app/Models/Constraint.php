@@ -43,11 +43,7 @@ readonly abstract class Constraint
         // >=1.0.0 , <2.0.1
 
         $first = PartialConstraint::fromString($first)->minimum();
-
-        $second = PartialConstraint::fromString($second)
-            ->changeType(SingleConstraintType::LessThan)
-            ->incrementLeastSignificant()
-            ->toSingleConstraint();
+        $second = PartialConstraint::fromString($second)->maximum();
 
         return new GroupConstraint(
             first: $first,
@@ -76,7 +72,6 @@ readonly abstract class Constraint
         }
 
         $first = $partial->minimum();
-
         $second = $partial->maximum();
 
         return new GroupConstraint(

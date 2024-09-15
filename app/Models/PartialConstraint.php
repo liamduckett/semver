@@ -31,46 +31,6 @@ readonly class PartialConstraint
 
     // Modifications
 
-    public function toSingleConstraint(): SingleConstraint
-    {
-        return new SingleConstraint(
-            type: $this->type,
-            major: $this->major,
-            minor: $this->minor ?? 0,
-            patch: $this->patch ?? 0,
-        );
-    }
-
-    public function changeType(SingleConstraintType $type): self
-    {
-        return new self(
-            type: $type,
-            major: $this->major,
-            minor: $this->minor,
-            patch: $this->patch,
-        );
-    }
-
-    public function incrementLeastSignificant(): self
-    {
-        $major = $this->major;
-        $minor = $this->minor;
-        $patch = $this->patch;
-
-        match(true) {
-            $patch !== null => $patch += 1,
-            $minor !== null => $minor += 1,
-            true => $major += 1,
-        };
-
-        return new self(
-            type: $this->type,
-            major: $major,
-            minor: $minor,
-            patch: $patch,
-        );
-    }
-
     public function minimum(): SingleConstraint
     {
         $minor = $this->minor instanceof Wildcard
@@ -91,25 +51,53 @@ readonly class PartialConstraint
 
     public function maximum(): SingleConstraint
     {
-        $major = $this->major;
-        $minor = $this->minor;
+        // detect whether wildcard, or hyphenated range
 
-        if($this->patch instanceof Wildcard) {
-            $minor += 1;
+        // WILDCARD
+        if($this->hasWildcard()) {
+            $major = $this->major;
+            $minor = $this->minor;
+
+            if($this->patch instanceof Wildcard) {
+                $minor += 1;
+            } else {
+                $major += 1;
+                $minor = 0;
+            }
+
+            return new SingleConstraint(
+                type: SingleConstraintType::LessThan,
+                major: $major,
+                minor: $minor,
+                patch: 0,
+            );
         } else {
-            $major += 1;
-            $minor = 0;
-        }
+            $major = $this->major;
+            $minor = $this->minor;
+            $patch = $this->patch;
 
-        return new SingleConstraint(
-            type: SingleConstraintType::LessThan,
-            major: $major,
-            minor: $minor,
-            patch: 0,
-        );
+            match(true) {
+                $patch !== null => $patch += 1,
+                $minor !== null => $minor += 1,
+                true => $major += 1,
+            };
+
+            return new SingleConstraint(
+                type: SingleConstraintType::LessThan,
+                major: $major,
+                minor: $minor ?? 0,
+                patch: $patch ?? 0,
+            );
+        }
     }
 
     // Internals
+
+    protected function hasWildcard(): bool
+    {
+        return $this->minor instanceof Wildcard
+            || $this->patch instanceof Wildcard;
+    }
 
     protected static function convertWildcards(array $versionParts): array
     {
